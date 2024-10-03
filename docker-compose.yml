@@ -1,28 +1,18 @@
-version: 3
-
 services:
   mongo:
-    image: mongo:latest
-    container_name: mongo
+    image: mongo
     ports:
       - "27017:27017"
     volumes:
-      - data:/data/db
-    networks:
-      - network
+      - mongo-data:/data/db
   api:
     build: ./api
     ports:
       - "3000:3000"
-    networks:
-      - network
+    links:
+      - mongo
     depends_on:
       - mongo
-      
-networks:
-  network:
-    driver: bridge
 
-volume:
-  data:
-    driver: local
+volumes:
+  mongo-data:
