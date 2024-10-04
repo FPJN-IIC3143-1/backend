@@ -428,10 +428,10 @@ Parameters supported:
 POST /preferences
 ```
 ```json
-    {
-    "diet": "vegan",
-    "intolerances": ["peanut", "soy", "egg"]
-    }
+{
+"diet": "vegan",
+"intolerances": ["peanut", "soy", "egg"]
+}
 ```
 
 

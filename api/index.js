@@ -17,11 +17,6 @@ app.get('/', (req, res) => {
 
 app.use('/', mainRouter);
 
-app.post('/preferences', (req, res) => {
-    const { preferences } = req.body;
-    res.json({ preferences });
-});
-
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
