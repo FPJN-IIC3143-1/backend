@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router()
+const { getRecipes, getRecipeInformation } = require('./spoonacular');
 
 
 router.get('/recipes', async (req, res) => {

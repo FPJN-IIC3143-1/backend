@@ -7,6 +7,8 @@
     - [Example](#example)
   - [GET /recipes/{id}/info](#get-recipesidinfo)
     - [Example](#example-1)
+  - [POST /preferences](#post-preferences)
+    - [Example](#example-2)
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
@@ -412,6 +414,24 @@ GET /recipes/716406/info
   "spoonacularScore": 99.41413116455078,
   "spoonacularSourceUrl": "https://spoonacular.com/asparagus-and-pea-soup-real-convenience-food-716406"
 }
+```
+
+## POST /preferences
+Set user preferences
+
+Parameters supported:
+- [diet](#diets)
+- [intolerances](#intolerances)
+
+### Example
+```
+POST /preferences
+```
+```json
+    {
+    "diet": "vegan",
+    "intolerances": ["peanut", "soy", "egg"]
+    }
 ```
 
 
