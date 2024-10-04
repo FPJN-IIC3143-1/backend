@@ -16,6 +16,8 @@ Parameters supported:
 - [diet](#diets)
 - [intolerances](#intolerances)
 
+If no parameters are provided, will default to user preferences (if found).
+
 ### Example
 ```
 GET /recipes?diet=vegan&intolerances=peanut,soy,egg
