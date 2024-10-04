@@ -13,3 +13,6 @@ router.get('/recipes/:id/info', async (req, res) => {
     res.json(data);
     }
 );
+
+
+module.exports = router;

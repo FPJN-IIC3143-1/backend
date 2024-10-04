@@ -6,6 +6,7 @@
   - [GET /recipes](#get-recipes)
     - [Example](#example)
   - [GET /recipes/{id}/info](#get-recipesidinfo)
+    - [Example](#example-1)
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
@@ -54,7 +55,7 @@ Response:
 ## GET /recipes/{id}/info
 Get detailed information about a recipe
 
-Example:
+### Example
 ```
 GET /recipes/716406/info
 ```
