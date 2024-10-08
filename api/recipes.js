@@ -18,9 +18,9 @@ router.get('/recipes', async (req, res) => {
     }
 );
 
-function getPreferences(user) {
+function getPreferences(user_id) {
     return Preferences.findOne({
-        user: user._id,
+        user: user_id,
     });
 }
 
