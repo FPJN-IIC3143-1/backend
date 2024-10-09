@@ -11,6 +11,7 @@ const preferencesSchema = new mongoose.Schema({
     intolerances: {
         type: [String],
     },
+    
 }, {
     timestamps: true,
 })
