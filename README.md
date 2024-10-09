@@ -3,6 +3,7 @@
 ## Table of Contents
 - [API Docs](#api-docs)
   - [Table of Contents](#table-of-contents)
+- [Important](#important)
   - [GET /recipes](#get-recipes)
     - [Example](#example)
   - [GET /recipes/{id}/info](#get-recipesidinfo)
@@ -12,6 +13,20 @@
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
+
+# Important
+
+All requests MUST have a JWT token in the Authorization header that contains the users email.
+
+```json
+{
+  "email": "email@email.com"
+}
+```
+
+If the email is not provided, the request will be rejected.
+
+If the email was not found in the database, a new user will be created with the email provided.
 
 ## GET /recipes
 Get a list of 3 recipes
