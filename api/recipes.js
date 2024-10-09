@@ -4,28 +4,26 @@ const { getRecipes, getRecipeInformation } = require('./spoonacular');
 const Preferences = require('./models/preferences');
 
 
-router.get('/recipes', async (req, res) => {
-    const preferences = await getPreferences({ _id: 0});
-    
-    
-    const data = await getRecipes(req.query);
-    
-    
-    if (!data.intolerances)
-        
-    
+router.get('/', async (req, res) => {
+    const preferences = await getPreferences(req.user._id);
+    console.log({...preferences, ...req.query})
+    const data = await getRecipes({...preferences, ...req.query});
     res.json(data);
     }
 );
 
-function getPreferences(user) {
-    return Preferences.findOne({
-        user: user._id,
+async function getPreferences(userId) {
+    const preferences = await Preferences.findOne({
+        user: userId,
     });
+    return {
+        diet: preferences.diet,
+        intolerances: preferences.intolerances
+    };
 }
 
 
-router.get('/recipes/:id/info', async (req, res) => {
+router.get('/:id/info', async (req, res) => {
     const data = await getRecipeInformation(req.params.id);
     res.json(data);
     }

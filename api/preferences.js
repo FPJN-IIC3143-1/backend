@@ -3,19 +3,25 @@ const router = express.Router();
 const Preferences = require('./models/preferences');
 
 
-router.post('/preferences', (req, res) => {
-    const { preferences } = req.body;
-
-    Preferences.create(
-    { 
-        ...preferences, user: 0
-    },
-    (err, preferences) => {
-        if (err)
-            return res.status(400).json({ error: 'Bad request' });
-        res.json({ preferences });
-    });
+router.post('/', async (req, res) => {
+    try {
+        const preferences = req.body;
+        const pref = await Preferences.findOneAndUpdate({user: req.user._id}, {...preferences}, {upsert: true})
+        res.json(pref);
+    } catch (error) {
+        req.status(500).json({error: error.message});
+    }
+   
 });
 
+router.get('/', async (req, res) => {
+    try {
+        const pref = await Preferences.findOne({user: req.user._id});
+        res.json(pref);
+    } catch (error) {
+        req.status(500).json({error: error.message});
+    }  
+}
+)
 
 module.exports = router;
