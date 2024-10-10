@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const port = 3000;
-const mainRouter = require('./router');
+const mainRouter = require('./routes/router');
 const { expressjwt: jwt } = require('express-jwt');
 const User = require('./models/user');
 
