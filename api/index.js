@@ -18,7 +18,6 @@ app.use(jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] }));
 
 app.use(async (req, res, next) => {
     let user;
-    console.log(req.auth);
     if (req.auth.email) {
         user = await User.findOne({ email: req.auth.email });
         if (!user)

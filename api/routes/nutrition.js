@@ -7,7 +7,7 @@ const DailyGoal = require('../models/dailyGoal');
 router.get('/dailyMacros', async (req, res) => {
     const dailyMacros = await getDailyMacros(req.user._id);
 
-    console.log(dailyMacros);
+    // console.log(dailyMacros);
 
     res.json(dailyMacros);
 });
@@ -17,15 +17,40 @@ async function getDailyMacros(userId) {
         user: userId,
     });
 
-    const consumedToday = [{ // PENDIENTE
-        protein: 0,
-        carbs: 0,
-        fats: 0,
-        calories: 0
-    }]
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const consumedToday = await History.aggregate([
+        {
+            $match: {
+                user: userId,
+                consumedAt: {
+                    $gte: startOfDay,
+                    $lte: endOfDay
+                }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                protein: { $sum: "$protein" },
+                carbs: { $sum: "$carbs" },
+                fats: { $sum: "$fats" },
+                calories: { $sum: "$calories" }
+            }
+        }
+    ]);
 
     return {
-        consumed: consumedToday[0],
+        consumed: {
+            protein: consumedToday[0]?.protein || 0,
+            carbs: consumedToday[0]?.carbs || 0,
+            fats: consumedToday[0]?.fats || 0,
+            calories: consumedToday[0]?.calories || 0
+        },
         goal: {
             protein: dailyGoal.protein,
             carbs: dailyGoal.carbs,
@@ -35,7 +60,7 @@ async function getDailyMacros(userId) {
     };
 }
 
-router.post('/dailyMacros', async (req, res) => {
+router.post('/dailyMacrosGoal', async (req, res) => {
     const { protein, carbs, fats, calories } = req.body;
     const userId = req.user._id;
 
