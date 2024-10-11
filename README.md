@@ -70,7 +70,7 @@ Response:
   "totalResults": 643
 }
 ```
-## GET /recipes/{id}/info
+## GET /recipes/{recipe_id}/info
 Get detailed information about a recipe
 
 ### Example
@@ -432,6 +432,168 @@ GET /recipes/716406/info
 }
 ```
 
+## GET /recipes/{recipe_id}/nutrition
+Get nutrition information about a recipe
+
+### Example
+```json
+{
+    "nutrients": [
+        {
+            "name": "Calories",
+            "amount": 316.49,
+            "unit": "kcal",
+            "percentOfDailyNeeds": 15.82
+        },
+        {
+            "name": "Fat",
+            "amount": 12.09,
+            "unit": "g",
+            "percentOfDailyNeeds": 18.6
+        },
+        {
+            "name": "Saturated Fat",
+            "amount": 3.98,
+            "unit": "g",
+            "percentOfDailyNeeds": 24.88
+        },
+        {
+            "name": "Carbohydrates",
+            "amount": 49.25,
+            "unit": "g",
+            "percentOfDailyNeeds": 16.42
+        },
+        {
+            "name": "Net Carbohydrates",
+            "amount": 46.76,
+            "unit": "g",
+            "percentOfDailyNeeds": 17.0
+        },
+        {
+            "name": "Sugar",
+            "amount": 21.98,
+            "unit": "g",
+            "percentOfDailyNeeds": 24.42
+        },
+        {
+            "name": "Cholesterol",
+            "amount": 1.88,
+            "unit": "mg",
+            "percentOfDailyNeeds": 0.63
+        },
+        {
+            "name": "Sodium",
+            "amount": 279.1,
+            "unit": "mg",
+            "percentOfDailyNeeds": 12.13
+        },
+        {
+            "name": "Protein",
+            "amount": 3.79,
+            "unit": "g",
+            "percentOfDailyNeeds": 7.57
+        },
+       ...
+    ],
+    "properties": [
+        {
+            "name": "Glycemic Index",
+            "amount": 33.51,
+            "unit": ""
+        },
+        {
+            "name": "Glycemic Load",
+            "amount": 15.63,
+            "unit": ""
+        },
+        {
+            "name": "Nutrition Score",
+            "amount": 5.868695652173913,
+            "unit": "%"
+        }
+    ],
+    "flavonoids": [
+        {
+            "name": "Cyanidin",
+            "amount": 2.35,
+            "unit": "mg"
+        },
+        {
+            "name": "Petunidin",
+            "amount": 8.75,
+            "unit": "mg"
+        },
+        {
+            "name": "Delphinidin",
+            "amount": 9.83,
+            "unit": "mg"
+        },
+       ...
+    ],
+    "ingredients": [
+        {
+            "id": 9050,
+            "name": "blueberries",
+            "amount": 0.19,
+            "unit": "cups",
+            "nutrients": [
+                {
+                    "name": "Vitamin E",
+                    "amount": 0.16,
+                    "unit": "mg",
+                    "percentOfDailyNeeds": 3.19
+                },
+                {
+                    "name": "Zinc",
+                    "amount": 0.04,
+                    "unit": "mg",
+                    "percentOfDailyNeeds": 1.96
+                },
+                {
+                    "name": "Fat",
+                    "amount": 0.09,
+                    "unit": "g",
+                    "percentOfDailyNeeds": 18.6
+                },
+                {
+                    "name": "Folate",
+                    "amount": 1.66,
+                    "unit": "µg",
+                    "percentOfDailyNeeds": 9.48
+                },
+                {
+                    "name": "Phosphorus",
+                    "amount": 3.33,
+                    "unit": "mg",
+                    "percentOfDailyNeeds": 4.24
+                },
+                {
+                    "name": "Manganese",
+                    "amount": 0.09,
+                    "unit": "mg",
+                    "percentOfDailyNeeds": 18.69
+                },
+                ...
+        },
+        ...
+    ],
+    "caloricBreakdown": {
+        "percentProtein": 4.72,
+        "percentFat": 33.9,
+        "percentCarbs": 61.38
+    },
+    "weightPerServing": {
+        "amount": 138,
+        "unit": "g"
+    }
+}
+```
+
+## POST /recipes/{recipe_id}/register
+Register a recipe as consumed by the user on the current day
+
+The `json` body is empty for this post request. Only the recipe id is needed.
+
 ## GET /preferences
 Get user preferences
 
@@ -453,6 +615,39 @@ POST /preferences
 }
 ```
 
+## GET /nutrition/dailyGoal
+Get today's macronutrients goal and current intake
+
+### Example
+```json
+{
+    "consumed": {
+        "protein": 0,
+        "carbs": 0,
+        "fats": 0,
+        "calories": 0
+    },
+    "goal": {
+        "protein": 100,
+        "carbs": 250,
+        "fats": 100,
+        "calories": 2900
+    }
+}
+```
+
+## POST /nutrition/dailyGoal
+Create or update daily macronutrients goal
+
+### Example
+```json
+{
+    "protein": "100",
+    "carbs": "250",
+    "fats": "100",
+    "calories": "2900"
+}
+```
 
 
 # Appendix

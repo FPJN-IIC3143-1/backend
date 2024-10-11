@@ -4,10 +4,8 @@ const History = require('../models/history');
 const DailyGoal = require('../models/dailyGoal');
 
 
-router.get('/dailyMacros', async (req, res) => {
+router.get('/dailyGoal', async (req, res) => {
     const dailyMacros = await getDailyMacros(req.user._id);
-
-    // console.log(dailyMacros);
 
     res.json(dailyMacros);
 });
@@ -60,7 +58,7 @@ async function getDailyMacros(userId) {
     };
 }
 
-router.post('/dailyMacrosGoal', async (req, res) => {
+router.post('/dailyGoal', async (req, res) => {
     const { protein, carbs, fats, calories } = req.body;
     const userId = req.user._id;
 

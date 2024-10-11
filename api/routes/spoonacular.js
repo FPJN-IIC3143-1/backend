@@ -2,7 +2,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 require('dotenv').config()
 
 
-const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
+const SPOONACULAR_API_KEY = "a4a518a1085c4cdcb8152365624f3de8"//process.env.SPOONACULAR_API_KEY;
 const SPOONACULAR_RECIPES_URL = "https://api.spoonacular.com/recipes"
 
 function addQueryParams(url_string, queryParams) {
