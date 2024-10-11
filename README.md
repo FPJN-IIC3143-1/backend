@@ -8,6 +8,7 @@
     - [Example](#example)
   - [GET /recipes/{id}/info](#get-recipesidinfo)
     - [Example](#example-1)
+  - [GET /preferences](#get-preferences)
   - [POST /preferences](#post-preferences)
     - [Example](#example-2)
 - [Appendix](#appendix)
@@ -430,6 +431,9 @@ GET /recipes/716406/info
   "spoonacularSourceUrl": "https://spoonacular.com/asparagus-and-pea-soup-real-convenience-food-716406"
 }
 ```
+
+## GET /preferences
+Get user preferences
 
 ## POST /preferences
 Set user preferences
