@@ -6,11 +6,19 @@
 - [Important](#important)
   - [GET /recipes](#get-recipes)
     - [Example](#example)
-  - [GET /recipes/{id}/info](#get-recipesidinfo)
+  - [GET /recipes/{recipe_id}/info](#get-recipesrecipe_idinfo)
     - [Example](#example-1)
+  - [GET /recipes/{recipe_id}/nutrition](#get-recipesrecipe_idnutrition)
+    - [Example](#example-2)
+  - [POST /recipes/{recipe_id}/register](#post-recipesrecipe_idregister)
+  - [GET /nutrition/dailyGoal](#get-nutritiondailygoal)
+    - [Example](#example-3)
+  - [POST /nutrition/dailyGoal](#post-nutritiondailygoal)
+    - [Example](#example-4)
   - [GET /preferences](#get-preferences)
   - [POST /preferences](#post-preferences)
-    - [Example](#example-2)
+    - [Example](#example-5)
+  
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
@@ -436,6 +444,10 @@ GET /recipes/716406/info
 Get nutrition information about a recipe
 
 ### Example
+```
+Get /recipes/1003464/nutrition
+```
+
 ```json
 {
     "nutrients": [
@@ -594,31 +606,14 @@ Register a recipe as consumed by the user on the current day
 
 The `json` body is empty for this post request. Only the recipe id is needed.
 
-## GET /preferences
-Get user preferences
-
-## POST /preferences
-Set user preferences
-
-Parameters supported:
-- [diet](#diets)
-- [intolerances](#intolerances)
-
-### Example
-```
-POST /preferences
-```
-```json
-{
-"diet": "vegan",
-"intolerances": ["peanut", "soy", "egg"]
-}
-```
-
 ## GET /nutrition/dailyGoal
 Get today's macronutrients goal and current intake
 
 ### Example
+```
+GET /nutrition/dailyGoal
+```
+
 ```json
 {
     "consumed": {
@@ -640,12 +635,37 @@ Get today's macronutrients goal and current intake
 Create or update daily macronutrients goal
 
 ### Example
+```
+POST /nutrition/dailyGoal
+```
+
 ```json
 {
     "protein": "100",
     "carbs": "250",
     "fats": "100",
     "calories": "2900"
+}
+```
+
+## GET /preferences
+Get user preferences
+
+## POST /preferences
+Set user preferences
+
+Parameters supported:
+- [diet](#diets)
+- [intolerances](#intolerances)
+
+### Example
+```
+POST /preferences
+```
+```json
+{
+"diet": "vegan",
+"intolerances": ["peanut", "soy", "egg"]
 }
 ```
 
