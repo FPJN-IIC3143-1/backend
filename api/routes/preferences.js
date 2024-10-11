@@ -6,12 +6,15 @@ const Preferences = require('../models/preferences');
 router.post('/', async (req, res) => {
     try {
         const preferences = req.body;
-        const pref = await Preferences.findOneAndUpdate({user: req.user._id}, {...preferences}, {upsert: true})
-        res.json(pref);
+        const pref = await Preferences.findOneAndUpdate(
+            { user: req.user._id },
+            { ...preferences },
+            { new: true, upsert: true }
+        );
+        res.status(201).json({ message: 'Preferences updated successfully', pref });
     } catch (error) {
-        req.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
-   
 });
 
 router.get('/', async (req, res) => {

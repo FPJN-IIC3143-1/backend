@@ -17,6 +17,15 @@ async function getPreferences(userId) {
     const preferences = await Preferences.findOne({
         user: userId,
     });
+
+    if (!preferences) {
+        // Handle the case where no preferences are found
+        return {
+            diet: null,
+            intolerances: null
+        };
+    }
+
     return {
         diet: preferences.diet,
         intolerances: preferences.intolerances
