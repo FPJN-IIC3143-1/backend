@@ -3,7 +3,7 @@ require('dotenv').config()
 
 
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
-const SPOONACULAR_URL = "https://api.spoonacular.com/recipes"
+const SPOONACULAR_RECIPES_URL = "https://api.spoonacular.com/recipes"
 
 function addQueryParams(url_string, queryParams) {
     const url = new URL(url_string);
@@ -14,10 +14,10 @@ function addQueryParams(url_string, queryParams) {
 }
 
 async function getRecipes(params) {
-    const complexSearchUrl = `${SPOONACULAR_URL}/complexSearch`
+    const complexSearchUrl = `${SPOONACULAR_RECIPES_URL}/complexSearch`
     const url = addQueryParams(complexSearchUrl, {
         apiKey: SPOONACULAR_API_KEY,
-        number: 3,
+        number: 5,
         instructionsRequired: true,
         ...params,
     });
@@ -29,7 +29,19 @@ async function getRecipes(params) {
 }
 
 async function getRecipeInformation(id) {
-    const recipeInformationUrl = `${SPOONACULAR_URL}/${id}/information`
+    const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/information`
+    const url = addQueryParams(recipeInformationUrl, {
+        apiKey: SPOONACULAR_API_KEY,
+    });
+
+    const response = await fetch(url)
+    const data = await response.json();
+    
+    return data;
+}
+
+async function getNutritionById(id) {
+    const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/nutritionWidget.json`
     const url = addQueryParams(recipeInformationUrl, {
         apiKey: SPOONACULAR_API_KEY,
     });
@@ -43,4 +55,5 @@ async function getRecipeInformation(id) {
 module.exports = {
     getRecipes,
     getRecipeInformation,
+    getNutritionById
 };

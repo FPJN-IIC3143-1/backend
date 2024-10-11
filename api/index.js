@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const port = 3000;
-const mainRouter = require('./router');
+const mainRouter = require('./routes/router');
 const { expressjwt: jwt } = require('express-jwt');
 const User = require('./models/user');
 
@@ -18,7 +18,6 @@ app.use(jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] }));
 
 app.use(async (req, res, next) => {
     let user;
-    console.log(req.auth);
     if (req.auth.email) {
         user = await User.findOne({ email: req.auth.email });
         if (!user)
