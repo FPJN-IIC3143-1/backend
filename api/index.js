@@ -16,7 +16,7 @@ app.use(express.json());
 
 // app.use(tokenMiddleware);
 
-app.use(jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] }));
+app.use(jwt({ secret: '-KJGzSyN_xPJFu058EIb-fTvEkFCna1QLdbERahXMMxKRJprkB4ig31ZL8klEWJl', algorithms: ['HS256'] }));
 
 app.use(async (req, res, next) => {
     let user;
