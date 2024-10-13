@@ -7,7 +7,9 @@ const { expressjwt: jwt } = require('express-jwt');
 const User = require('./models/user');
 
 
-mongoose.connect('mongodb://mongo:27017/test')
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/test';
+mongoose.connect(MONGO_URI);
+
 
 // Middleware to parse JSON bodies
 app.use(express.json());
