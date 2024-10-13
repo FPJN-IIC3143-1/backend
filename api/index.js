@@ -4,12 +4,14 @@ const app = express();
 const port = 3000;
 const mainRouter = require('./routes/router');
 const { expressjwt: jwt } = require('express-jwt');
+const cors = require('cors')
 const User = require('./models/user');
 
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/test';
 mongoose.connect(MONGO_URI);
 
+app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
