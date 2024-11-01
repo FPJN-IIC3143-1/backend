@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { getIngredientsById } = require('./spoonacular');
 
 
 router.get('/', async (req, res) => {
@@ -47,7 +48,11 @@ router.post('/addIngredients', async (req, res) => {
 
 router.post('/removeIngredients', async (req, res) => {
     try {
-        const ingredients = req.body.ingredients;
+        let ingredients = req.body.ingredients;
+        if (ingredients.length === 0 && req.body.recipeId) {
+            const recipeIngredients = await getIngredientsById(req.body.recipeId);
+            ingredients = recipeIngredients.ingredients;
+        }
         const pantry = await Pantry.findOne({ user: req.user._id });
 
         if (!pantry) {

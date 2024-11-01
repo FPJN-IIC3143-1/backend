@@ -17,7 +17,6 @@ const pantrySchema = new mongoose.Schema({
             },
             unit: {
                 type: String,
-                enum: ['grams', 'milliliters', 'units'], // Add more units as needed
                 required: true,
             }
         }
