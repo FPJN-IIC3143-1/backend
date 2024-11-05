@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getIngredientsById } = require('./spoonacular');
+const Pantry = require('../models/pantry');
 
 
 router.get('/', async (req, res) => {
