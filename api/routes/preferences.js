@@ -19,12 +19,11 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const pref = await Preferences.findOne({user: req.user._id});
+        const pref = await Preferences.findOne({ user: req.user._id });
         res.json(pref);
     } catch (error) {
-        req.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message }); // Corrected from req to res
     }  
 });
-
 
 module.exports = router;

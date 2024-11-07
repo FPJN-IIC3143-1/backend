@@ -5,9 +5,12 @@ const DailyGoal = require('../models/dailyGoal');
 
 
 router.get('/dailyGoal', async (req, res) => {
-    const dailyMacros = await getDailyMacros(req.user._id);
-
-    res.json(dailyMacros);
+    try {
+        const dailyMacros = await getDailyMacros(req.user._id);
+        res.json(dailyMacros);
+    } catch (error) {
+        res.status(500).json({ error: error.message }); // Ensure error is caught and response is sent
+    }
 });
 
 async function getDailyMacros(userId) {
@@ -59,28 +62,32 @@ async function getDailyMacros(userId) {
 }
 
 router.post('/dailyGoal', async (req, res) => {
-    const { protein, carbs, fats, calories } = req.body;
-    const userId = req.user._id;
+    try {
+        const { protein, carbs, fats, calories } = req.body;
+        const userId = req.user._id;
 
-    let dailyGoal = await DailyGoal.findOne({ user: userId });
+        let dailyGoal = await DailyGoal.findOne({ user: userId });
 
-    if (dailyGoal) {
-        dailyGoal.protein = protein;
-        dailyGoal.carbs = carbs;
-        dailyGoal.fats = fats;
-        dailyGoal.calories = calories;
-        await dailyGoal.save();
-        res.status(200).json({ message: 'Daily goal updated successfully' });
-    } else {
-        dailyGoal = new DailyGoal({
-            user: userId,
-            protein,
-            carbs,
-            fats,
-            calories
-        });
-        await dailyGoal.save();
-        res.status(201).json({ message: 'Daily goal set successfully' });
+        if (dailyGoal) {
+            dailyGoal.protein = protein;
+            dailyGoal.carbs = carbs;
+            dailyGoal.fats = fats;
+            dailyGoal.calories = calories;
+            await dailyGoal.save();
+            res.status(200).json({ message: 'Daily goal updated successfully' });
+        } else {
+            dailyGoal = new DailyGoal({
+                user: userId,
+                protein,
+                carbs,
+                fats,
+                calories
+            });
+            await dailyGoal.save();
+            res.status(201).json({ message: 'Daily goal set successfully' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message }); // Ensure error is caught and response is sent
     }
 });
 
