@@ -53,11 +53,12 @@ router.get('/generateByNutritionalGoals', async (req, res) => {
         differencePonderator = 0.25;
     }
 
+    console.log(dailyGoal, consumedMacros);
     const remainingMacros = {
-        minCalories: (dailyGoal.calories - consumedMacros.calories) * differencePonderator,
-        minProtein: (dailyGoal.protein - consumedMacros.protein) * differencePonderator,
-        minCarbs: (dailyGoal.carbs - consumedMacros.carbs) * differencePonderator,
-        minFat: (dailyGoal.fats - consumedMacros.fats) * differencePonderator,
+        minCalories: (dailyGoal.calories - consumedMacros.consumed.calories) * differencePonderator,
+        minProtein: (dailyGoal.protein - consumedMacros.consumed.protein) * differencePonderator,
+        minCarbs: (dailyGoal.carbs - consumedMacros.consumed.carbs) * differencePonderator,
+        minFat: (dailyGoal.fats - consumedMacros.consumed.fats) * differencePonderator,
     };
 
     const data = await getRecipeByNutrients({ ...preferences, ...remainingMacros, ...req.query });

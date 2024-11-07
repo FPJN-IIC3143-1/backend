@@ -29,6 +29,7 @@ async function getRecipes(params) {
 }
 
 async function getRecipeByNutrients(params) {
+    console.log(params)
     const findByNutrientsUrl = `${SPOONACULAR_RECIPES_URL}/findByNutrients`
     const url = addQueryParams(findByNutrientsUrl, {
         apiKey: SPOONACULAR_API_KEY,
@@ -78,10 +79,24 @@ async function getIngredientsById(id) {
     return data;
 }
 
+async function convertAmounts(params) {
+    const convertAmountsUrl = `${SPOONACULAR_RECIPES_URL}/convert`
+    const url = addQueryParams(convertAmountsUrl, {
+        apiKey: SPOONACULAR_API_KEY,
+        ...params,
+    });
+
+    const response = await fetch(url)
+    const data = await response.json();
+    
+    return data;
+}
+
 module.exports = {
     getRecipes,
     getRecipeInformation,
     getNutritionById,
     getIngredientsById,
     getRecipeByNutrients,
+    convertAmounts
 };

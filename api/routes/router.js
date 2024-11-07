@@ -4,7 +4,7 @@ const router = express.Router();
 
 const recipesRoutes = require('./recipes');
 const preferencesRoutes = require('./preferences')
-const nutritionRoutes = require('./nutrition')
+const { nutritionRoutes } = require('./nutrition')
 const pantryRoutes = require('./pantry')
 
 router.use('/recipes', recipesRoutes);
