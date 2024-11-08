@@ -11,13 +11,23 @@
   - [GET /recipes/{recipe_id}/nutrition](#get-recipesrecipe_idnutrition)
     - [Example](#example-2)
   - [POST /recipes/{recipe_id}/register](#post-recipesrecipe_idregister)
-  - [GET /nutrition/dailyGoal](#get-nutritiondailygoal)
     - [Example](#example-3)
-  - [POST /nutrition/dailyGoal](#post-nutritiondailygoal)
+  - [GET /recipes/generateByNutritionalGoals](#get-recipesgeneratebynutritionalgoals)
     - [Example](#example-4)
-  - [GET /preferences](#get-preferences)
-  - [POST /preferences](#post-preferences)
+  - [GET /nutrition/dailyGoal](#get-nutritiondailygoal)
     - [Example](#example-5)
+  - [POST /nutrition/dailyGoal](#post-nutritiondailygoal)
+    - [Example](#example-6)
+  - [GET /preferences](#get-preferences)
+    - [Example](#example-7)
+  - [POST /preferences](#post-preferences)
+    - [Example](#example-8)
+  - [GET /pantry](#get-pantry)
+    - [Example](#example-9)
+  - [POST /pantry/addIngredients](#post-pantryaddingredients)
+    - [Example](#example-10)
+  - [POST /pantry/removeIngredients](#post-pantryremoveingredients)
+    - [Example](#example-11)
   
 - [Appendix](#appendix)
   - [diets](#diets)
@@ -38,7 +48,7 @@ If the email is not provided, the request will be rejected.
 If the email was not found in the database, a new user will be created with the email provided.
 
 ## GET /recipes
-Get a list of 3 recipes
+Get a list of 5 recipes
 
 Parameters supported:
 - [diet](#diets)
@@ -53,29 +63,41 @@ GET /recipes?diet=vegan&intolerances=peanut,soy,egg
 Response:
 ```json
 {
-  "results": [
-    {
-      "id": 716406,
-      "title": "Asparagus and Pea Soup: Real Convenience Food",
-      "image": "https://img.spoonacular.com/recipes/716406-312x231.jpg",
-      "imageType": "jpg"
-    },
-    {
-      "id": 644387,
-      "title": "Garlicky Kale",
-      "image": "https://img.spoonacular.com/recipes/644387-312x231.jpg",
-      "imageType": "jpg"
-    },
-    {
-      "id": 782601,
-      "title": "Red Kidney Bean Jambalaya",
-      "image": "https://img.spoonacular.com/recipes/782601-312x231.jpg",
-      "imageType": "jpg"
-    }
-  ],
-  "offset": 0,
-  "number": 3,
-  "totalResults": 643
+    "results": [
+        {
+            "id": 716406,
+            "title": "Asparagus and Pea Soup: Real Convenience Food",
+            "image": "https://img.spoonacular.com/recipes/716406-312x231.jpg",
+            "imageType": "jpg"
+        },
+        {
+            "id": 644387,
+            "title": "Garlicky Kale",
+            "image": "https://img.spoonacular.com/recipes/644387-312x231.jpg",
+            "imageType": "jpg"
+        },
+        {
+            "id": 716426,
+            "title": "Cauliflower, Brown Rice, and Vegetable Fried Rice",
+            "image": "https://img.spoonacular.com/recipes/716426-312x231.jpg",
+            "imageType": "jpg"
+        },
+        {
+            "id": 715769,
+            "title": "Broccolini Quinoa Pilaf",
+            "image": "https://img.spoonacular.com/recipes/715769-312x231.jpg",
+            "imageType": "jpg"
+        },
+        {
+            "id": 663559,
+            "title": "Tomato and lentil soup",
+            "image": "https://img.spoonacular.com/recipes/663559-312x231.jpg",
+            "imageType": "jpg"
+        }
+    ],
+    "offset": 0,
+    "number": 5,
+    "totalResults": 649
 }
 ```
 ## GET /recipes/{recipe_id}/info
@@ -606,6 +628,80 @@ Register a recipe as consumed by the user on the current day
 
 The `json` body is empty for this post request. Only the recipe id is needed.
 
+### Example
+```
+POST /recipes/716406/register
+```
+
+```json
+{}
+```
+
+## GET /recipes/generateByNutritionalGoals
+Allows user to request for recipes that aim to accomplish their daily nutritional goals.
+The importance of meeting the daily goal with the recipe can be established by using one of three levels of coverage (**URL parameter**): `low`, `medium`, `high`. The default level is `medium`.
+`high` means that the recipe should cover the entire gap between current intake and daily goal. `medium` means that the recipe should cover (at least) 50% of that gap. `low` means that the recipe should cover 25% or more of that gap.
+
+### Example
+```
+GET /recipes/generateByNutritionalGoals?coverage=low
+```
+
+```json
+[
+    {
+        "id": 635675,
+        "title": "Boozy Bbq Chicken",
+        "image": "https://img.spoonacular.com/recipes/635675-312x231.jpg",
+        "imageType": "jpg",
+        "calories": 725,
+        "protein": "32g",
+        "fat": "33g",
+        "carbs": "63g"
+    },
+    {
+        "id": 640338,
+        "title": "Cracked Wheat Salad with Dates & Tahini Yogurt",
+        "image": "https://img.spoonacular.com/recipes/640338-312x231.jpg",
+        "imageType": "jpg",
+        "calories": 890,
+        "protein": "32g",
+        "fat": "48g",
+        "carbs": "80g"
+    },
+    {
+        "id": 651448,
+        "title": "Mediterranean Watermelon Salad",
+        "image": "https://img.spoonacular.com/recipes/651448-312x231.jpg",
+        "imageType": "jpg",
+        "calories": 762,
+        "protein": "28g",
+        "fat": "38g",
+        "carbs": "80g"
+    },
+    {
+        "id": 656795,
+        "title": "Pork Patty Bánh Mì",
+        "image": "https://img.spoonacular.com/recipes/656795-312x231.jpg",
+        "imageType": "jpg",
+        "calories": 1083,
+        "protein": "53g",
+        "fat": "60g",
+        "carbs": "74g"
+    },
+    {
+        "id": 660485,
+        "title": "Soba Noodle & Five-Spice Pork Salad",
+        "image": "https://img.spoonacular.com/recipes/660485-312x231.jpg",
+        "imageType": "jpg",
+        "calories": 915,
+        "protein": "43g",
+        "fat": "48g",
+        "carbs": "82g"
+    }
+]
+```
+
 ## GET /nutrition/dailyGoal
 Get today's macronutrients goal and current intake
 
@@ -651,6 +747,27 @@ POST /nutrition/dailyGoal
 ## GET /preferences
 Get user preferences
 
+### Example
+```
+GET /preferences
+```
+
+```json
+{
+    "_id": "670893d7067782131445d791",
+    "user": "67072ee4ebf9511feb2bd695",
+    "__v": 0,
+    "createdAt": "2024-10-11T02:56:23.683Z",
+    "diet": "vegan",
+    "intolerances": [
+        "peanut",
+        "beans",
+        "doritos"
+    ],
+    "updatedAt": "2024-10-11T03:02:04.776Z"
+}
+```
+
 ## POST /preferences
 Set user preferences
 
@@ -669,6 +786,126 @@ POST /preferences
 }
 ```
 
+## GET /pantry
+Get user pantry
+
+### Example
+```
+GET /pantry
+```
+
+```json
+[
+    {
+        "_id": "6729841f2fcd2d854b63b7ba",
+        "user": "67072ee4ebf9511feb2bd695",
+        "ingredients": [
+            {
+                "quantity": {
+                    "amount": 29.92,
+                    "unit": "tsp"
+                },
+                "name": "cinnamon",
+                "_id": "67298a38c89365679ae37e3b"
+            },
+            {
+                "quantity": {
+                    "amount": 12,
+                    "unit": "unit"
+                },
+                "name": "egg",
+                "_id": "672aafa568234759a3e79627"
+            },
+            {
+                "quantity": {
+                    "amount": 24,
+                    "unit": "unit"
+                },
+                "name": "apple",
+                "_id": "672aafa568234759a3e79628"
+            }
+        ],
+        "createdAt": "2024-11-05T02:34:07.584Z",
+        "updatedAt": "2024-11-07T01:03:59.693Z",
+        "__v": 6
+    }
+]
+```
+
+## POST /pantry/addIngredients
+Add ingredients to user pantry
+
+### Example
+```
+POST /pantry/addIngredients
+```
+
+```json
+{
+    "ingredients": [
+        {
+            "name": "cinnamon",
+            "quantity": {
+                "amount": 5,
+                "unit": "grams"
+            }
+        },
+        {
+            "name": "egg",
+            "quantity": {
+                "amount": 1.0,
+                "unit": "unit"
+            }
+        },
+        {
+            "name": "apple",
+            "quantity": {
+                "amount": 2,
+                "unit": "unit"
+            }
+        }
+    ]
+}
+```
+
+## POST /pantry/removeIngredients
+Remove ingredients from user pantry
+
+Ingredients can be removed either by specifing each one or by providing a recipe id (removes the ingredients used on that recipe).
+
+### Example
+```
+POST /pantry/removeIngredients
+```
+
+```json
+{
+    "recipeId": 644885, // This would remove the ingredients used on this recipe
+    "ingredients": [ // The rest of the input would not be considered if recipeId is provided
+        {
+            "name": "cinnamon",
+            "quantity": {
+                "amount": 5,
+                "unit": "grams"
+            }
+        },
+        {
+            "name": "egg",
+            "quantity": {
+                "amount": 1.0,
+                "unit": "unit"
+            }
+        },
+        {
+            "name": "apple",
+            "quantity": {
+                "amount": 2,
+                "unit": "unit"
+            }
+        }
+    ]
+}
+```
 
 # Appendix
 ## diets
