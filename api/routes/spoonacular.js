@@ -28,6 +28,21 @@ async function getRecipes(params) {
     return data;
 }
 
+async function getRecipeByNutrients(params) {
+    console.log(params)
+    const findByNutrientsUrl = `${SPOONACULAR_RECIPES_URL}/findByNutrients`
+    const url = addQueryParams(findByNutrientsUrl, {
+        apiKey: SPOONACULAR_API_KEY,
+        number: 5,
+        ...params,
+    });
+
+    const response = await fetch(url)
+    const data = await response.json();
+    
+    return data;
+}
+
 async function getRecipeInformation(id) {
     const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/information`
     const url = addQueryParams(recipeInformationUrl, {
@@ -52,8 +67,36 @@ async function getNutritionById(id) {
     return data;
 }
 
+async function getIngredientsById(id) {
+    const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/ingredientWidget.json`
+    const url = addQueryParams(recipeInformationUrl, {
+        apiKey: SPOONACULAR_API_KEY,
+    });
+
+    const response = await fetch(url)
+    const data = await response.json();
+    
+    return data;
+}
+
+async function convertAmounts(params) {
+    const convertAmountsUrl = `${SPOONACULAR_RECIPES_URL}/convert`
+    const url = addQueryParams(convertAmountsUrl, {
+        apiKey: SPOONACULAR_API_KEY,
+        ...params,
+    });
+
+    const response = await fetch(url)
+    const data = await response.json();
+    
+    return data;
+}
+
 module.exports = {
     getRecipes,
     getRecipeInformation,
-    getNutritionById
+    getNutritionById,
+    getIngredientsById,
+    getRecipeByNutrients,
+    convertAmounts
 };
