@@ -18,7 +18,7 @@ function getStatusOfTransaction(token_ws){
 router.post('/', async (req, res) => {
 
     try {
-        const returnUrl = 'http://localhost:3000/payment-return';
+        const { returnUrl } = req.body;
         
         const tx = new WebpayPlus.Transaction(new Options(
             IntegrationCommerceCodes.WEBPAY_PLUS,

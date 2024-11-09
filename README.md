@@ -6,11 +6,11 @@
 - [Important](#important)
   - [GET /recipes](#get-recipes)
     - [Example](#example)
-  - [GET /recipes/{recipe_id}/info](#get-recipesrecipe_idinfo)
+  - [GET /recipes/{recipe\_id}/info](#get-recipesrecipe_idinfo)
     - [Example](#example-1)
-  - [GET /recipes/{recipe_id}/nutrition](#get-recipesrecipe_idnutrition)
+  - [GET /recipes/{recipe\_id}/nutrition](#get-recipesrecipe_idnutrition)
     - [Example](#example-2)
-  - [POST /recipes/{recipe_id}/register](#post-recipesrecipe_idregister)
+  - [POST /recipes/{recipe\_id}/register](#post-recipesrecipe_idregister)
     - [Example](#example-3)
   - [GET /recipes/generateByNutritionalGoals](#get-recipesgeneratebynutritionalgoals)
     - [Example](#example-4)
@@ -28,7 +28,11 @@
     - [Example](#example-10)
   - [POST /pantry/removeIngredients](#post-pantryremoveingredients)
     - [Example](#example-11)
-  
+- [POST /payment](#post-payment)
+  - [Example](#example-12)
+- [GET /payment/status?token\_ws={token}](#get-paymentstatustoken_wstoken)
+  - [URL parameters](#url-parameters)
+  - [Example](#example-13)
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
@@ -906,6 +910,57 @@ POST /pantry/removeIngredients
     ]
 }
 ```
+
+# POST /payment
+Generate a payment link for the user to pay for the service
+
+The `json` body is the return URL where the user will be redirected after the payment is completed.
+
+## Example
+```
+POST /payment
+```
+```json
+{
+  returnUrl: "https://myapp.com/payment/success"
+}
+```
+
+```json
+{
+	"redirect": "https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws=01ab32137075c4cb6ed28f0f51524b2201afe80376458d07f0eac10d74070604"
+}
+```
+
+# GET /payment/status?token_ws={token}
+Get the payment status
+
+## URL parameters
+- `token_ws`: The token provided by the payment service
+
+## Example
+```
+GET /payment/status?token_ws=01ab32137075c4cb6ed28f0f51524b2201afe80376458d07f0eac10d74070604
+```
+
+```json
+{
+	"vci": "TSN",
+	"amount": 10000,
+	"status": "INITIALIZED",
+	"buy_order": "bjbcszemllbyvloormsympbrlm",
+	"session_id": "lcmwkykavwxrmrepivpclbqseu",
+	"card_detail": {
+		"card_number": "6623"
+	},
+	"accounting_date": "1108",
+	"transaction_date": "2024-11-08T19:26:36.362Z",
+	"payment_type_code": "VN",
+	"installments_number": 0
+}
+```
+
+
 
 # Appendix
 ## diets
