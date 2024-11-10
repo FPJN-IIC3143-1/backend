@@ -638,9 +638,12 @@ POST /recipes/716406/register
 ```
 
 ## GET /recipes/generateByNutritionalGoals
-Allows user to request for recipes that aim to accomplish their daily nutritional goals.
-The importance of meeting the daily goal with the recipe can be established by using one of three levels of coverage (**URL parameter**): `low`, `medium`, `high`. The default level is `medium`.
-`high` means that the recipe should cover the entire gap between current intake and daily goal. `medium` means that the recipe should cover (at least) 50% of that gap. `low` means that the recipe should cover 25% or more of that gap.
+Allows user to request recipes that aim to meet their daily macronutrients goal.
+The "importance" of meeting the daily goal with the recipe can be established by using one of three levels of coverage (**URL parameter**): `very-low`, `low`, `medium`, `high`. The default level is `medium`.
+
+`high` means that the recipe should cover the **entire** gap between current intake and daily goal. `medium` means that the recipe should cover (at least) **50%** of that gap. `low` means that the recipe should cover **25%** or more of that gap. `very-low` means that the recipe should cover **15%** or more of that gap.
+
+Covering the gap means that the recipe should provide the user with the macronutrients that are missing from their daily goal. In the context of spoonacular, it sets the **minCalories**, **minProtein**, **minCarbs**, and **minFat** parameters to generate recipes that have at least that amount of macronutrients.
 
 ### Example
 ```
