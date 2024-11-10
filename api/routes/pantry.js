@@ -122,4 +122,21 @@ router.post('/removeIngredients', async (req, res) => {
     }
 });
 
+
+
+router.post('/updatePantry', async (req, res) => {
+    try {
+        const pantry = await Pantry.findOne({ user: req.user._id });
+        if (!pantry) {
+            res.status(404).json({ error: 'Pantry not found' });
+            return;
+        }
+        pantry.ingredients = req.body.ingredients;
+        await pantry.save();
+        res.json(pantry);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
