@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-const router = require('../../routes/nutrition');
+const { nutritionRoutes } = require('../../routes/nutrition');
 const History = require('../../models/history');
 const DailyGoal = require('../../models/dailyGoal');
 
@@ -13,7 +13,7 @@ app.use((req, res, next) => {
     req.user = { _id: 'user123' };
     next();
 });
-app.use('/nutrition', router);
+app.use('/nutrition', nutritionRoutes);
 
 describe('Nutrition API', () => {
     describe('GET /nutrition/dailyGoal', () => {
@@ -51,6 +51,35 @@ describe('Nutrition API', () => {
             });
         });
 
+        it('should return zero consumed values if no history is found', async () => {
+            DailyGoal.findOne.mockResolvedValue({
+                protein: 150,
+                carbs: 200,
+                fats: 70,
+                calories: 2500
+            });
+
+            History.aggregate.mockResolvedValue([]);
+
+            const response = await request(app).get('/nutrition/dailyGoal');
+
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual({
+                consumed: {
+                    protein: 0,
+                    carbs: 0,
+                    fats: 0,
+                    calories: 0
+                },
+                goal: {
+                    protein: 150,
+                    carbs: 200,
+                    fats: 70,
+                    calories: 2500
+                }
+            });
+        });
+
         it('should handle errors', async () => {
             DailyGoal.findOne.mockRejectedValue(new Error('Database error'));
 
@@ -58,7 +87,7 @@ describe('Nutrition API', () => {
 
             expect(response.status).toBe(500);
             expect(response.body).toEqual({ error: 'Database error' });
-        }, 10000); // Increase timeout to 10 seconds
+        }, 10000);
     });
 
     describe('POST /nutrition/dailyGoal', () => {

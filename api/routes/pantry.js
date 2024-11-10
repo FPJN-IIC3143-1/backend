@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getIngredientsById, convertAmounts } = require('./spoonacular');
+const { getIngredientsById, convertAmounts } = require('../clients/spoonacular');
 const Pantry = require('../models/pantry');
 
 
