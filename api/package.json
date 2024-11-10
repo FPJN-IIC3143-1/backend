@@ -6,6 +6,11 @@
     "test": "jest",
     "test:coverage": "jest --coverage"
   },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov"]
+  },
   "author": "",
   "license": "ISC",
   "description": "",
