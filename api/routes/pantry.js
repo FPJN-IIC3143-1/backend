@@ -132,6 +132,7 @@ router.post('/updatePantry', async (req, res) => {
             return;
         }
         pantry.ingredients = req.body.ingredients;
+        pantry.ingredients = pantry.ingredients.filter(i => i.quantity.amount > 0);
         await pantry.save();
         res.json(pantry);
     } catch (error) {
