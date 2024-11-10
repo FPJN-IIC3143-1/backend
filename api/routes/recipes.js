@@ -9,7 +9,6 @@ const { getDailyMacros } = require('./nutrition');
 
 router.get('/', async (req, res) => {
     const preferences = await getPreferences(req.user._id);
-    console.log({...preferences, ...req.query})
     const data = await getRecipes({...preferences, ...req.query});
     res.json(data);
     }
@@ -51,17 +50,18 @@ router.get('/generateByNutritionalGoals', async (req, res) => {
         differencePonderator = 0.5;
     } else if (req.query.coverage === 'low') {
         differencePonderator = 0.25;
+    } else if (req.query.coverage === 'very-low') {
+        differencePonderator = 0.15;
     }
 
-    console.log(dailyGoal, consumedMacros);
     const remainingMacros = {
         minCalories: (dailyGoal.calories - consumedMacros.consumed.calories) * differencePonderator,
         minProtein: (dailyGoal.protein - consumedMacros.consumed.protein) * differencePonderator,
         minCarbs: (dailyGoal.carbs - consumedMacros.consumed.carbs) * differencePonderator,
         minFat: (dailyGoal.fats - consumedMacros.consumed.fats) * differencePonderator,
     };
-
-    const data = await getRecipeByNutrients({ ...preferences, ...remainingMacros, ...req.query });
+    console.log({ ...preferences, ...remainingMacros, ...req.query });
+    const data = await getRecipes({ ...preferences, ...remainingMacros, ...req.query });
     res.json(data);
 });
 
