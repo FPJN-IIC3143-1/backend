@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router()
-const { getRecipes, getRecipeInformation, getNutritionById, getRecipeByNutrients } = require('./spoonacular');
+const { getRecipes, getRecipeInformation, getNutritionById, getRecipeByNutrients } = require('../clients/spoonacular');
 const Preferences = require('../models/preferences');
 const History = require('../models/history');
 const DailyGoal = require('../models/dailyGoal');
@@ -43,15 +43,27 @@ router.get('/generateByNutritionalGoals', async (req, res) => {
 
     const consumedMacros = await getDailyMacros(req.user._id);
 
+    const HIGH_COVERAGE = 1;
+    const MEDIUM_COVERAGE = 0.5;
+    const LOW_COVERAGE = 0.25;
+    const VERY_LOW_COVERAGE = 0.15;
+
     let differencePonderator;
-    if (req.query.coverage === 'high') {
-        differencePonderator = 1;
-    } else if (req.query.coverage === 'medium' || !req.query.coverage) {
-        differencePonderator = 0.5;
-    } else if (req.query.coverage === 'low') {
-        differencePonderator = 0.25;
-    } else if (req.query.coverage === 'very-low') {
-        differencePonderator = 0.15;
+    switch (req.query.coverage) {
+        case 'high':
+            differencePonderator = HIGH_COVERAGE;
+            break;
+        case 'medium':
+            differencePonderator = MEDIUM_COVERAGE;
+            break;
+        case 'low':
+            differencePonderator = LOW_COVERAGE;
+            break;
+        case 'very-low':
+            differencePonderator = VERY_LOW_COVERAGE;
+            break;
+        default:
+            differencePonderator = MEDIUM_COVERAGE;
     }
 
     const remainingMacros = {
@@ -60,7 +72,6 @@ router.get('/generateByNutritionalGoals', async (req, res) => {
         minCarbs: (dailyGoal.carbs - consumedMacros.consumed.carbs) * differencePonderator,
         minFat: (dailyGoal.fats - consumedMacros.consumed.fats) * differencePonderator,
     };
-    console.log({ ...preferences, ...remainingMacros, ...req.query });
     const data = await getRecipes({ ...preferences, ...remainingMacros, ...req.query });
     res.json(data);
 });
