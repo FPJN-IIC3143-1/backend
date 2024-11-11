@@ -1,4 +1,77 @@
-# API Docs
+# Setup
+
+## Prerequisites
+
+- Node.js (version 18 or later)
+- Docker (for running the application in a containerized environment)
+- MongoDB (or use the provided Docker setup)
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/your-repo.git
+   cd your-repo
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   - Create a `.env` file in the root directory.
+   - Add the necessary environment variables (e.g., `MONGO_URI`, `JWT_SECRET`).
+
+## Running the Application
+
+### Locally
+
+1. Start the application:
+   ```bash
+   npm start
+   ```
+
+2. The server will be running at `http://localhost:3000`.
+
+### Using Docker
+
+1. Build and run the Docker containers:
+   ```bash
+   docker-compose up --build
+   ```
+
+2. The application will be accessible at `http://localhost:3000`.
+
+# Testing
+
+## Running Tests
+
+1. To run the tests, use the following command:
+   ```bash
+   npm test
+   ```
+
+2. To generate a test coverage report:
+   ```bash
+   npm run test:coverage
+   ```
+
+## Continuous Integration
+
+- The project uses GitHub Actions for continuous integration. The workflows are defined in the `.github/workflows` directory.
+
+### Test Workflow
+
+- The test workflow is triggered on pushes and pull requests to the `main` branch. It runs the tests using Node.js version 18.
+
+### Coverage Workflow
+
+- The coverage workflow checks the test coverage on pull requests to the `main` and `master` branches.
+
+### SonarQube Analysis
+
+- The SonarQube workflow is set up to analyze code quality on pushes to the `master` branch and on pull requests.
 
 ## Table of Contents
 - [API Docs](#api-docs)
@@ -992,4 +1065,3 @@ GET /payment/status?token_ws=01ab32137075c4cb6ed28f0f51524b2201afe80376458d07f0e
 - sulfite
 - tree nut
 - wheat
-
