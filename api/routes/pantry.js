@@ -13,7 +13,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/addIngredients', async (req, res) => {
+// ACTUALIZAR DOCUMENTACIÓN
+router.post('/modifyIngredients', async (req, res) => {
     try {
         const ingredients = req.body.ingredients;
         const pantry = await Pantry.findOne({ user: req.user._id });
@@ -40,13 +41,16 @@ router.post('/addIngredients', async (req, res) => {
         for (const ingredient of ingredients) {
             const existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
             if (existingIngredient && existingIngredient.quantity.unit !== ingredient.quantity.unit) {
+                const sign = Math.sign(ingredient.quantity.amount);
+                console.log(existingIngredient.quantity.unit, ingredient.quantity.unit);
                 const convertedAmount = await convertAmounts({
                     ingredientName: ingredient.name,
-                    sourceAmount: ingredient.quantity.amount,
+                    sourceAmount: Math.abs(ingredient.quantity.amount),
                     sourceUnit: ingredient.quantity.unit,
                     targetUnit: existingIngredient.quantity.unit
                 });
-                ingredient.quantity.amount = convertedAmount.targetAmount;
+                console.log(convertedAmount);
+                ingredient.quantity.amount = sign * convertedAmount.targetAmount;
                 ingredient.quantity.unit = existingIngredient.quantity.unit;
             }
         }
@@ -72,57 +76,6 @@ router.post('/addIngredients', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-router.post('/removeIngredients', async (req, res) => {
-    try {
-        let ingredients = req.body.ingredients;
-        if (req.body.recipeId) {
-            const recipeIngredients = await getIngredientsById(req.body.recipeId);
-            ingredients = recipeIngredients.ingredients.map(ingredient => ({
-                name: ingredient.name,
-                quantity: {
-                    amount: ingredient.amount.metric.value,
-                    unit: ingredient.amount.metric.unit
-                }
-            }));
-        }
-        const pantry = await Pantry.findOne({ user: req.user._id });
-
-        if (!pantry) {
-            res.status(404).json({ error: 'Pantry not found' });
-            return;
-        }
-
-        for (const ingredient of ingredients) {
-            const existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
-            if (existingIngredient && existingIngredient.quantity.unit !== ingredient.quantity.unit) {
-                const convertedAmount = await convertAmounts({
-                    ingredientName: ingredient.name,
-                    sourceAmount: ingredient.quantity.amount,
-                    sourceUnit: ingredient.quantity.unit,
-                    targetUnit: existingIngredient.quantity.unit
-                });
-                ingredient.quantity.amount = convertedAmount.targetAmount;
-                ingredient.quantity.unit = existingIngredient.quantity.unit;
-            }
-        }
-
-        ingredients.forEach(ingredient => {
-            const existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
-            if (existingIngredient) {
-                existingIngredient.quantity.amount -= ingredient.quantity.amount;
-            }
-        });
-
-        pantry.ingredients = pantry.ingredients.filter(i => i.quantity.amount > 0);
-        await pantry.save();
-        res.json(pantry);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-
 
 router.post('/updatePantry', async (req, res) => {
     try {
