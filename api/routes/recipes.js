@@ -90,8 +90,8 @@ router.get('/:id/info', async (req, res) => {
 );
 
 router.post('/:id/register', async (req, res) => {
-    const nutritionalValues = await getNutritionById(req.params.id);
     try {
+        const nutritionalValues = await getNutritionById(req.params.id);
         const calories = parseInt(nutritionalValues.calories);
         const protein = parseInt(nutritionalValues.protein.slice(0, -1));
         const carbs = parseInt(nutritionalValues.carbs.slice(0, -1));
@@ -115,8 +115,8 @@ router.post('/:id/register', async (req, res) => {
 // DE AQI PARA BAIXO É NOVO, FALTA DOCUMENTAR NO README!!!!!!!!!
 
 router.post('/:id/favorite', async (req, res) => {
-    const nutritionalValues = await getNutritionById(req.params.id);
     try {
+        const nutritionalValues = await getNutritionById(req.params.id);
         const calories = parseInt(nutritionalValues.calories);
         const protein = parseInt(nutritionalValues.protein.slice(0, -1));
         const carbs = parseInt(nutritionalValues.carbs.slice(0, -1));
@@ -136,7 +136,6 @@ router.post('/:id/favorite', async (req, res) => {
             favorite,
             { upsert: true }
         );
-        await favorite.save();
         res.status(201).json({ message: 'Recipe added to favorites' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to add recipe to favorites' });
