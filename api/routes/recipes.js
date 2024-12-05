@@ -112,6 +112,8 @@ router.post('/:id/register', async (req, res) => {
     }
 });
 
+// DE AQI PARA BAIXO É NOVO, FALTA DOCUMENTAR NO README!!!!!!!!!
+
 router.post('/:id/favorite', async (req, res) => {
     const nutritionalValues = await getNutritionById(req.params.id);
     try {
@@ -151,8 +153,19 @@ router.delete('/:id/favorite', async (req, res) => {
 });
 
 router.get('/favorites', async (req, res) => {
-    const favorites = await FavoriteRecipes.find({ user: req.user._id });
+    const limit = parseInt(req.query.limit) || 10; // Default to last 10 favorites if limit is not specified
+    const favorites = await FavoriteRecipes.find({ user: req.user._id })
+        .sort({ _id: -1 }) // Sort by descending order of _id to get the most recent entries
+        .limit(limit);
     res.json(favorites);
+});
+
+router.get('/lastConsumed', async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10; // Default to last 10 consumed recipes if limit is not specified
+    const history = await History.find({ user: req.user._id })
+        .sort({ _id: -1 }) // Sort by descending order of _id to get the most recent entries
+        .limit(limit);
+    res.json(history);
 });
 
 
