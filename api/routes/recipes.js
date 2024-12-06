@@ -4,6 +4,7 @@ const { getRecipes, getRecipeInformation, getNutritionById, getRecipeByNutrients
 const Preferences = require('../models/preferences');
 const History = require('../models/history');
 const DailyGoal = require('../models/dailyGoal');
+const FavoriteRecipes = require('../models/favoriteRecipes');
 const { getDailyMacros } = require('./nutrition');
 
 
@@ -89,8 +90,8 @@ router.get('/:id/info', async (req, res) => {
 );
 
 router.post('/:id/register', async (req, res) => {
-    const nutritionalValues = await getNutritionById(req.params.id);
     try {
+        const nutritionalValues = await getNutritionById(req.params.id);
         const calories = parseInt(nutritionalValues.calories);
         const protein = parseInt(nutritionalValues.protein.slice(0, -1));
         const carbs = parseInt(nutritionalValues.carbs.slice(0, -1));
@@ -109,6 +110,59 @@ router.post('/:id/register', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Failed to register recipe consumption' });
     }
+});
+
+router.post('/:id/favorite', async (req, res) => {
+    try {
+        const nutritionalValues = await getNutritionById(req.params.id);
+        const calories = parseInt(nutritionalValues.calories);
+        const protein = parseInt(nutritionalValues.protein.slice(0, -1));
+        const carbs = parseInt(nutritionalValues.carbs.slice(0, -1));
+        const fats = parseInt(nutritionalValues.fat.slice(0, -1));
+
+        const favorite = {
+            user: req.user._id,
+            recipe_id: req.params.id,
+            protein,
+            carbs,
+            fats,
+            calories
+        };
+
+        await FavoriteRecipes.findOneAndUpdate(
+            { user: req.user._id, recipe_id: req.params.id },
+            favorite,
+            { upsert: true }
+        );
+        res.status(201).json({ message: 'Recipe added to favorites' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to add recipe to favorites' });
+    }
+});
+
+router.delete('/:id/favorite', async (req, res) => {
+    try {
+        await FavoriteRecipes.deleteOne({ user: req.user._id, recipe_id: req.params.id });
+        res.status(200).json({ message: 'Recipe removed from favorites' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to remove recipe from favorites' });
+    }
+});
+
+router.get('/favorites', async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10; // Default to last 10 favorites if limit is not specified
+    const favorites = await FavoriteRecipes.find({ user: req.user._id })
+        .sort({ _id: -1 }) // Sort by descending order of _id to get the most recent entries
+        .limit(limit);
+    res.json(favorites);
+});
+
+router.get('/lastConsumed', async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10; // Default to last 10 consumed recipes if limit is not specified
+    const history = await History.find({ user: req.user._id })
+        .sort({ _id: -1 }) // Sort by descending order of _id to get the most recent entries
+        .limit(limit);
+    res.json(history);
 });
 
 

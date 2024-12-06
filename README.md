@@ -87,25 +87,33 @@
     - [Example](#example-3)
   - [GET /recipes/generateByNutritionalGoals](#get-recipesgeneratebynutritionalgoals)
     - [Example](#example-4)
-  - [GET /nutrition/dailyGoal](#get-nutritiondailygoal)
+  - [POST /recipes/{recipe\_id}/favorite](#post-recipesrecipe_idfavorite)
     - [Example](#example-5)
-  - [POST /nutrition/dailyGoal](#post-nutritiondailygoal)
+  - [DELETE /recipes/{recipe\_id}/favorite](#delete-recipesrecipe_idfavorite)
     - [Example](#example-6)
-  - [GET /preferences](#get-preferences)
+  - [GET /recipes/favorites](#get-recipesfavorites)
     - [Example](#example-7)
-  - [POST /preferences](#post-preferences)
+  - [GET /recipes/lastConsumed](#get-recipeslastconsumed)
     - [Example](#example-8)
-  - [GET /pantry](#get-pantry)
+  - [GET /nutrition/dailyGoal](#get-nutritiondailygoal)
     - [Example](#example-9)
-  - [POST /pantry/modifyIngredients](#post-pantrymodifyingredients)
+  - [POST /nutrition/dailyGoal](#post-nutritiondailygoal)
     - [Example](#example-10)
-  - [POST /pantry/updatePantry](#post-pantryupdatepantry)
+  - [GET /preferences](#get-preferences)
     - [Example](#example-11)
+  - [POST /preferences](#post-preferences)
+    - [Example](#example-12)
+  - [GET /pantry](#get-pantry)
+    - [Example](#example-13)
+  - [POST /pantry/modifyIngredients](#post-pantrymodifyingredients)
+    - [Example](#example-14)
+  - [POST /pantry/updatePantry](#post-pantryupdatepantry)
+    - [Example](#example-15)
 - [POST /payment](#post-payment)
-  - [Example](#example-12)
+  - [Example](#example-16)
 - [GET /payment/status?token\_ws={token}](#get-paymentstatustoken_wstoken)
   - [URL parameters](#url-parameters)
-  - [Example](#example-13)
+  - [Example](#example-17)
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
@@ -778,6 +786,118 @@ GET /recipes/generateByNutritionalGoals?coverage=low
         "protein": "43g",
         "fat": "48g",
         "carbs": "82g"
+    }
+]
+```
+## POST /recipes/{recipe_id}/favorite
+Post a recipe as favorite for that user. The recipe will be included in the user's favorites list.
+The `json` body is empty for this post request. Only the recipe id is needed.
+
+### Example
+```
+POST /recipes/716406/favorite
+```
+
+```json
+{}
+```
+
+## DELETE /recipes/{recipe_id}/favorite
+Delete a recipe from the user's favorites list.
+Only the recipe id is needed.
+
+### Example
+```
+DELETE /recipes/716406/favorite
+```
+
+```json
+{}
+```
+
+## GET /recipes/favorites
+Get the user's favorite recipes. Recives an optional `limit` parameter to limit the number of results. If no limit is provided, will default to 10.
+The returned information includes the `recipe_id` and macros (`calories`, `carbs`, `fats`, `protein`).
+
+### Example
+```
+GET /recipes/favorites
+```
+
+```json
+[
+    {
+        "_id": "675118a38b13ca319fd43eeb",
+        "user": "67072ee4ebf9511feb2bd695",
+        "recipe_id": "715538",
+        "__v": 0,
+        "calories": 591,
+        "carbs": 69,
+        "createdAt": "2024-12-05T03:06:11.111Z",
+        "fats": 13,
+        "protein": 44,
+        "updatedAt": "2024-12-05T03:06:11.111Z"
+    },
+    {
+        "_id": "675115728b13ca319fd43ee9",
+        "user": "67072ee4ebf9511feb2bd695",
+        "recipe_id": "716429",
+        "__v": 0,
+        "calories": 543,
+        "carbs": 83,
+        "createdAt": "2024-12-05T02:52:34.064Z",
+        "fats": 16,
+        "protein": 16,
+        "updatedAt": "2024-12-05T03:02:19.226Z"
+    }
+]
+```
+
+## GET /recipes/lastConsumed
+Get the user's last consumed recipes (stored in `History`). Recives an optional `limit` parameter to limit the number of results. If no limit is provided, will default to 10.
+The returned information includes the `recipe_id` and macros (`calories`, `carbs`, `fats`, `protein`).
+
+### Example
+```
+GET /recipes/lastConsumed?limit=3
+```
+
+```json
+[
+    {
+        "_id": "672e6a12e25aa6aa95e0c8cd",
+        "user": "67072ee4ebf9511feb2bd695",
+        "consumedAt": "2024-11-08T19:44:18.269Z",
+        "recipe_id": "1003464",
+        "protein": 11,
+        "carbs": 111,
+        "calories": 899,
+        "createdAt": "2024-11-08T19:44:18.273Z",
+        "updatedAt": "2024-11-08T19:44:18.273Z",
+        "__v": 0
+    },
+    {
+        "_id": "67084d7c510c01ba73607727",
+        "user": "67072ee4ebf9511feb2bd695",
+        "consumedAt": "2024-10-10T21:56:12.465Z",
+        "recipe_id": "1003464",
+        "protein": 11,
+        "carbs": 111,
+        "calories": 899,
+        "createdAt": "2024-10-10T21:56:12.469Z",
+        "updatedAt": "2024-10-10T21:56:12.469Z",
+        "__v": 0
+    },
+    {
+        "_id": "67084cf831baca9c8a36db2c",
+        "user": "67072ee4ebf9511feb2bd695",
+        "recipe_id": "1003464",
+        "protein": 11,
+        "carbs": 111,
+        "calories": 899,
+        "createdAt": "2024-10-10T21:54:00.212Z",
+        "updatedAt": "2024-10-10T21:54:00.212Z",
+        "__v": 0
     }
 ]
 ```
