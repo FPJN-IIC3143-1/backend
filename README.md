@@ -105,9 +105,9 @@
     - [Example](#example-12)
   - [GET /pantry](#get-pantry)
     - [Example](#example-13)
-  - [POST /pantry/addIngredients](#post-pantryaddingredients)
+  - [POST /pantry/modifyIngredients](#post-pantrymodifyingredients)
     - [Example](#example-14)
-  - [POST /pantry/removeIngredients](#post-pantryremoveingredients)
+  - [POST /pantry/updatePantry](#post-pantryupdatepantry)
     - [Example](#example-15)
 - [POST /payment](#post-payment)
   - [Example](#example-16)
@@ -1032,12 +1032,53 @@ GET /pantry
 ]
 ```
 
-## POST /pantry/addIngredients
-Add ingredients to user pantry
+## POST /pantry/modifyIngredients
+Add or subtract ingredients from user pantry.
+The `json` body should contain an array of ingredients to add or remove. When the quantity is 0, the ingredient will be removed from the pantry.
+If an ingredient is not found in the pantry, it will be added.
+
+**IMPORTANT**: When an ingredient is stored in adimensional units (e.g., 1 egg, 2 apples, etc.), the input cannot be in any other unit. The unit must be an empty string. This is due to a limitation from the Spoonacular API.
 
 ### Example
 ```
-POST /pantry/addIngredients
+POST /pantry/modifyIngredients
+```
+
+```json
+{
+  "ingredients": [
+      {
+          "name": "cinnamon",
+          "quantity": {
+              "amount": -1,
+              "unit": "cups"
+          }
+      },
+      {
+          "name": "egg",
+          "quantity": {
+              "amount": 1,
+              "unit": "kg"
+          }
+      },
+      {
+          "name": "apple",
+          "quantity": {
+              "amount": 2,
+              "unit": ""
+          }
+      }
+  ]
+}
+```
+
+## POST /pantry/updatePantry
+Update the pantry with a new list of ingredients. This will replace the current pantry with the new list.
+The posted `json` **overrides** the current pantry.
+
+### Example
+```
+POST /pantry/updatePantry
 ```
 
 ```json
@@ -1047,60 +1088,21 @@ POST /pantry/addIngredients
             "name": "cinnamon",
             "quantity": {
                 "amount": 5,
-                "unit": "grams"
+                "unit": "g"
             }
         },
         {
             "name": "egg",
             "quantity": {
                 "amount": 1.0,
-                "unit": "unit"
+                "unit": ""
             }
         },
         {
             "name": "apple",
             "quantity": {
                 "amount": 2,
-                "unit": "unit"
-            }
-        }
-    ]
-}
-```
-
-## POST /pantry/removeIngredients
-Remove ingredients from user pantry
-
-Ingredients can be removed either by specifing each one or by providing a recipe id (removes the ingredients used on that recipe).
-
-### Example
-```
-POST /pantry/removeIngredients
-```
-
-```json
-{
-    "recipeId": 644885, // This would remove the ingredients used on this recipe
-    "ingredients": [ // The rest of the input would not be considered if recipeId is provided
-        {
-            "name": "cinnamon",
-            "quantity": {
-                "amount": 5,
-                "unit": "grams"
-            }
-        },
-        {
-            "name": "egg",
-            "quantity": {
-                "amount": 1.0,
-                "unit": "unit"
-            }
-        },
-        {
-            "name": "apple",
-            "quantity": {
-                "amount": 2,
-                "unit": "unit"
+                "unit": "kg"
             }
         }
     ]
