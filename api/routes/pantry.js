@@ -13,7 +13,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// ACTUALIZAR DOCUMENTACIÓN
 router.post('/modifyIngredients', async (req, res) => {
     try {
         const ingredients = req.body.ingredients;
@@ -42,14 +41,12 @@ router.post('/modifyIngredients', async (req, res) => {
             const existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
             if (existingIngredient && existingIngredient.quantity.unit !== ingredient.quantity.unit) {
                 const sign = Math.sign(ingredient.quantity.amount);
-                console.log(existingIngredient.quantity.unit, ingredient.quantity.unit);
                 const convertedAmount = await convertAmounts({
                     ingredientName: ingredient.name,
                     sourceAmount: Math.abs(ingredient.quantity.amount),
                     sourceUnit: ingredient.quantity.unit,
                     targetUnit: existingIngredient.quantity.unit
                 });
-                console.log(convertedAmount);
                 ingredient.quantity.amount = sign * convertedAmount.targetAmount;
                 ingredient.quantity.unit = existingIngredient.quantity.unit;
             }
