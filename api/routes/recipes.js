@@ -112,8 +112,6 @@ router.post('/:id/register', async (req, res) => {
     }
 });
 
-// DE AQI PARA BAIXO É NOVO, FALTA DOCUMENTAR NO README!!!!!!!!!
-
 router.post('/:id/favorite', async (req, res) => {
     try {
         const nutritionalValues = await getNutritionById(req.params.id);
