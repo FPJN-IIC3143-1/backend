@@ -7,6 +7,11 @@ const getRandom26LetterString = () => {
 }
 
 const transactionSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     buyOrder: {
         type: String,
         default: getRandom26LetterString,
