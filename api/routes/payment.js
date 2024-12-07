@@ -77,7 +77,10 @@ router.get('/status', async (req, res) => {
 });
 
 router.get('/history', async (req, res) => {
-    const transactions = await Transaction.find({ user: req.user._id });
+    let {count} = req.query;
+    count = parseInt(count) || 10;
+
+    const transactions = await Transaction.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(count);
     res.json(transactions);
 });
 
