@@ -14,6 +14,7 @@ router.use('/preferences', preferencesRoutes)
 router.use('/nutrition', nutritionRoutes)
 router.use('/pantry', pantryRoutes)
 router.use('/payment', paymentRoutes)
+router.use('/history', require('./history'))
 
 
 module.exports = router;
