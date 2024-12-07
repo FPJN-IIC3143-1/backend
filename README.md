@@ -1205,6 +1205,54 @@ GET /history/export
 ]
 ```
 
+# POST /history/import
+Import user history from a json
+
+## Example
+```
+POST /history/import
+```
+
+```json
+[
+    {
+        "_id": "672e6a12e25aa6aa95e0c8cd",
+        "user": "67072ee4ebf9511feb2bd695",
+        "consumedAt": "2024-11-08T19:44:18.269Z",
+        "recipe_id": "1003464",
+        "protein": 11,
+        "carbs": 111,
+        "calories": 899,
+        "createdAt": "2024-11-08T19:44:18.273Z",
+        "updatedAt": "2024-11-08T19:44:18.273Z",
+        "__v": 0
+    },
+    {
+        "_id": "67084d7c510c01ba73607727",
+        "user": "67072ee4ebf9511feb2bd695",
+        "consumedAt": "2024-10-10T21:56:12.465Z",
+        "recipe_id": "1003464",
+        "protein": 11,
+        "carbs": 111,
+        "calories": 899,
+        "createdAt": "2024-10-10T21:56:12.469Z",
+        "updatedAt": "2024-10-10T21:56:12.469Z",
+        "__v": 0
+    },
+    {
+        "_id": "67084cf831baca9c8a36db2c",
+        "user": "67072ee4ebf9511feb2bd695",
+        "recipe_id": "1003464",
+        "protein": 11,
+        "carbs": 111,
+        "calories": 899,
+        "createdAt": "2024-10-10T21:54:00.212Z",
+        "updatedAt": "2024-10-10T21:54:00.212Z",
+        "__v": 0
+    }
+]
+```
+
 # GET /notifications
 Get user notifications
 
