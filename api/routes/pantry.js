@@ -29,7 +29,7 @@ router.post('/modifyIngredients', async (req, res) => {
             if (existingIngredient) {
                 if (existingIngredient.quantity.unit !== ingredient.quantity.unit) {
 
-                    const sign = Math.sign(receivedSign);
+                    const sign = Math.sign(receivedSign) || 1;
 
                     ingredient = await convertIngredientUnit(ingredient, existingIngredient.quantity.unit);
 
