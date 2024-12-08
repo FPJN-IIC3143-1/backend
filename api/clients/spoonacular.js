@@ -1,5 +1,6 @@
 const axios = require('axios');
 require('dotenv').config();
+const Cache = require('../models/cache');
 //get random api key
 
 const tokens = ["d882bb96d42341f8adac644db865b895", "ac39c86344754b42a2631616de22597f", "548b233d65aa401fa856ce8277b0c958"]
@@ -24,7 +25,19 @@ function addQueryParams(url_string, queryParams) {
 }
 
 async function fetchData(url) {
+
+
+    const cached = await Cache.findOne({ url })
+    if (cached) {
+        console.log('Cache hit for url:', url);
+        return cached.response;
+    }
+
     const response = await axios.get(url);
+    if (response.status === 200) 
+        await Cache.create({ url, response: response.data });
+    
+
     return response.data;
 }
 
@@ -40,11 +53,13 @@ async function getRecipes(params) {
 }
 
 async function getRecipeInformation(id) {
+
     const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/information`;
     const url = addQueryParams(recipeInformationUrl, {
         apiKey: spoonacular_api_key(),
     });
     return await fetchData(url);
+
 }
 
 async function getNutritionById(id) {
@@ -60,6 +75,8 @@ async function getIngredientsById(id) {
     const url = addQueryParams(recipeInformationUrl, {
         apiKey: spoonacular_api_key(),
     });
+
+    
     return await fetchData(url);
 }
 
