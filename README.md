@@ -1264,27 +1264,19 @@ GET /notifications
 ```json
 [
     {
-        "_id": "672e6a12e25aa6aa95e0c8cd",
+        "_id": "6755027dfc594565b7f1ec50",
         "user": "67072ee4ebf9511feb2bd695",
-        "message": "You have a new recipe recommendation!",
-        "createdAt": "2024-11-08T19:44:18.269Z",
-        "updatedAt": "2024-11-08T19:44:18.273Z",
+        "message": "Stay determined! 2900 calories, 100g protein, 250g carbs, 100g fats left.",
+        "createdAt": "2024-12-08T02:20:45.781Z",
+        "updatedAt": "2024-12-08T02:20:45.781Z",
         "__v": 0
     },
     {
-        "_id": "67084d7c510c01ba73607727",
+        "_id": "6754feecb08cefe64c40489f",
         "user": "67072ee4ebf9511feb2bd695",
-        "message": "You have a new recipe recommendation!",
-        "createdAt": "2024-10-10T21:56:12.465Z",
-        "updatedAt": "2024-10-10T21:56:12.469Z",
-        "__v": 0
-    },
-    {
-        "_id": "67084cf831baca9c8a36db2c",
-        "user": "67072ee4ebf9511feb2bd695",
-        "message": "You have a new recipe recommendation!",
-        "createdAt": "2024-10-10T21:54:00.212Z",
-        "updatedAt": "2024-10-10T21:54:00.212Z",
+        "message": "Server is running",
+        "createdAt": "2024-12-08T02:05:32.115Z",
+        "updatedAt": "2024-12-08T02:05:32.115Z",
         "__v": 0
     }
 ]
