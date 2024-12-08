@@ -1,7 +1,10 @@
 const axios = require('axios');
 require('dotenv').config();
-
-const SPOONACULAR_API_KEY = "0236a8be63ae493d9f03b2e24ae478b5"; //process.env.SPOONACULAR_API_KEY;
+//get random api key
+const spoonacular_api_key = ()=>{
+    const keys = ["d882bb96d42341f8adac644db865b895", "ac39c86344754b42a2631616de22597f", "548b233d65aa401fa856ce8277b0c958"]
+    return keys[Math.floor(Math.random() * keys.length)];
+}
 const SPOONACULAR_RECIPES_URL = "https://api.spoonacular.com/recipes";
 
 function addQueryParams(url_string, queryParams) {
@@ -20,7 +23,7 @@ async function fetchData(url) {
 async function getRecipes(params) {
     const complexSearchUrl = `${SPOONACULAR_RECIPES_URL}/complexSearch`;
     const url = addQueryParams(complexSearchUrl, {
-        apiKey: SPOONACULAR_API_KEY,
+        apiKey: spoonacular_api_key(),
         number: 5,
         instructionsRequired: true,
         ...params,
@@ -31,7 +34,7 @@ async function getRecipes(params) {
 async function getRecipeInformation(id) {
     const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/information`;
     const url = addQueryParams(recipeInformationUrl, {
-        apiKey: SPOONACULAR_API_KEY,
+        apiKey: spoonacular_api_key(),
     });
     return await fetchData(url);
 }
@@ -39,7 +42,7 @@ async function getRecipeInformation(id) {
 async function getNutritionById(id) {
     const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/nutritionWidget.json`;
     const url = addQueryParams(recipeInformationUrl, {
-        apiKey: SPOONACULAR_API_KEY,
+        apiKey: spoonacular_api_key(),
     });
     return await fetchData(url);
 }
@@ -47,7 +50,7 @@ async function getNutritionById(id) {
 async function getIngredientsById(id) {
     const recipeInformationUrl = `${SPOONACULAR_RECIPES_URL}/${id}/ingredientWidget.json`;
     const url = addQueryParams(recipeInformationUrl, {
-        apiKey: SPOONACULAR_API_KEY,
+        apiKey: spoonacular_api_key(),
     });
     return await fetchData(url);
 }
@@ -55,7 +58,7 @@ async function getIngredientsById(id) {
 async function convertAmounts(params) {
     const convertAmountsUrl = `${SPOONACULAR_RECIPES_URL}/convert`;
     const url = addQueryParams(convertAmountsUrl, {
-        apiKey: SPOONACULAR_API_KEY,
+        apiKey: spoonacular_api_key(),
         ...params,
     });
     return await fetchData(url);

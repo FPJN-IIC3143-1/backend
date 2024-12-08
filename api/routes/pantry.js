@@ -16,6 +16,8 @@ router.get('/', async (req, res) => {
 router.post('/modifyIngredients', async (req, res) => {
     try {
         const ingredients = req.body.ingredients;
+        const receivedSign = req.body.sign;
+
         let pantry = await Pantry.findOne({ user: req.user._id });
 
         if (!pantry) {
@@ -26,13 +28,16 @@ router.post('/modifyIngredients', async (req, res) => {
             let existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
             if (existingIngredient) {
                 if (existingIngredient.quantity.unit !== ingredient.quantity.unit) {
-                    const sign = Math.sign(ingredient.quantity.amount);
+
+                    const sign = Math.sign(receivedSign);
+
                     const convertedAmount = await convertAmounts({
                         ingredientName: ingredient.name,
                         sourceAmount: Math.abs(ingredient.quantity.amount),
                         sourceUnit: ingredient.quantity.unit,
                         targetUnit: existingIngredient.quantity.unit
                     });
+
                     ingredient.quantity.amount = sign * convertedAmount.targetAmount;
                     ingredient.quantity.unit = existingIngredient.quantity.unit;
                 }
