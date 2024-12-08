@@ -1,9 +1,17 @@
 const axios = require('axios');
 require('dotenv').config();
 //get random api key
+
+const tokens = ["d882bb96d42341f8adac644db865b895", "ac39c86344754b42a2631616de22597f", "548b233d65aa401fa856ce8277b0c958"]
+
+function getNextToken() {
+    const token = tokens.shift();
+    tokens.push(token);
+    return token;
+}
+
 const spoonacular_api_key = ()=>{
-    const keys = ["d882bb96d42341f8adac644db865b895", "ac39c86344754b42a2631616de22597f", "548b233d65aa401fa856ce8277b0c958"]
-    return keys[Math.floor(Math.random() * keys.length)];
+    return getNextToken();
 }
 const SPOONACULAR_RECIPES_URL = "https://api.spoonacular.com/recipes";
 
