@@ -15,6 +15,12 @@ function getStatusOfTransaction(token_ws){
     return tx.status(token_ws);
 }
 
+router.get('/', async (req, res) => {
+    res.json(
+        await Transaction.find()
+    )
+});
+
 router.post('/', async (req, res) => {
 
     try {
@@ -27,6 +33,7 @@ router.post('/', async (req, res) => {
         ));
 
         const transaction = await Transaction.create({
+            user: req.user._id,
             amount: 10_000
         });
 
@@ -56,7 +63,7 @@ router.get('/status', async (req, res) => {
     const { token_ws } = req.query;
     try {
         const response = await getStatusOfTransaction(token_ws);
-        const transaction = await Transaction.findOne({ buyOrder: response.buy_order });
+        const transaction = await Transaction.findOne({ buyOrder: response.buy_order, user: req.user._id });
         transaction.status = response.status;
         await transaction.save();
 
@@ -68,5 +75,17 @@ router.get('/status', async (req, res) => {
     
 
 });
+
+router.get('/history', async (req, res) => {
+    let {count} = req.query;
+    count = parseInt(count) || 10;
+
+    const transactions = await Transaction.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(count);
+    res.json(transactions);
+});
+
+
+
+
 
 module.exports = router;
