@@ -24,22 +24,16 @@ router.post('/modifyIngredients', async (req, res) => {
             pantry = new Pantry({ user: req.user._id, ingredients: [] });
         }
 
-        for (const ingredient of ingredients) {
+        for (let ingredient of ingredients) {
             let existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
             if (existingIngredient) {
                 if (existingIngredient.quantity.unit !== ingredient.quantity.unit) {
 
                     const sign = Math.sign(receivedSign);
 
-                    const convertedAmount = await convertAmounts({
-                        ingredientName: ingredient.name,
-                        sourceAmount: Math.abs(ingredient.quantity.amount),
-                        sourceUnit: ingredient.quantity.unit,
-                        targetUnit: existingIngredient.quantity.unit
-                    });
+                    ingredient = await convertIngredientUnit(ingredient, existingIngredient.quantity.unit);
 
-                    ingredient.quantity.amount = sign * convertedAmount.targetAmount;
-                    ingredient.quantity.unit = existingIngredient.quantity.unit;
+                    ingredient.quantity.amount = sign * ingredient.quantity.amount;
                 }
                 existingIngredient.quantity.amount += ingredient.quantity.amount;
             } else {
@@ -60,6 +54,35 @@ router.post('/modifyIngredients', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+async function convertIngredientUnit(ingredient, storedUnit) {
+    let convertedAmount;
+    if (storedUnit === "") {
+        convertedAmount = await convertAmounts({
+            ingredientName: ingredient.name,
+            sourceAmount: 1,
+            sourceUnit: storedUnit,
+            targetUnit: ingredient.quantity.unit
+        });
+
+        const convertRate = convertedAmount.targetAmount;
+
+        ingredient.quantity.amount /= convertRate;
+        ingredient.quantity.unit = storedUnit;
+    } else {
+        convertedAmount = await convertAmounts({
+            ingredientName: ingredient.name,
+            sourceAmount: ingredient.quantity.amount,
+            sourceUnit: ingredient.quantity.unit,
+            targetUnit: storedUnit
+        });
+    
+        ingredient.quantity.amount = convertedAmount.targetAmount;
+        ingredient.quantity.unit = storedUnit;
+    }
+
+    return ingredient;
+}
 
 router.post('/updatePantry', async (req, res) => {
     try {
