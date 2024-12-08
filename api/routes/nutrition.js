@@ -53,10 +53,10 @@ async function getDailyMacros(userId) {
             calories: consumedToday[0]?.calories || 0
         },
         goal: {
-            protein: dailyGoal.protein,
-            carbs: dailyGoal.carbs,
-            fats: dailyGoal.fats,
-            calories: dailyGoal.calories
+            protein: dailyGoal?.protein || 0,
+            carbs: dailyGoal?.carbs || 0,
+            fats: dailyGoal?.fats || 0,
+            calories: dailyGoal?.calories || 0
         }
     };
 }

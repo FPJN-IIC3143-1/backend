@@ -6,6 +6,7 @@ const mainRouter = require('./routes/router');
 const { expressjwt: jwt } = require('express-jwt');
 const cors = require('cors')
 const User = require('./models/user');
+const { sendRemainingMacrosNotificationToAllUsers } = require('./notifications');
 
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/test';
@@ -50,4 +51,9 @@ app.use('/', mainRouter);
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
+    sendRemainingMacrosNotificationToAllUsers();
 });
+
+setInterval(async () => {
+    await sendRemainingMacrosNotificationToAllUsers();
+}, 1000 * 60 * 60);
