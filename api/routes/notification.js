@@ -4,7 +4,8 @@ const Notification = require('../models/notification');
 
 
 router.get('/', async (req, res) => {
-    const notifications = await Notification.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(10);
+    const limit = parseInt(req.query.limit) || 10;
+    const notifications = await Notification.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(limit);
     res.json(notifications);
 }
 );
