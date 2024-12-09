@@ -23,6 +23,9 @@ const historySchema = new mongoose.Schema({
     calories: {
         type: Number,
     },
+    ingredients: {
+        type: [String],
+    },
 }, {
     timestamps: true,
 })

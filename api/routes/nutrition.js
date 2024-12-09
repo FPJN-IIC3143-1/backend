@@ -91,6 +91,74 @@ router.post('/dailyGoal', async (req, res) => {
     }
 });
 
+router.get('/consumedOverPeriod', async (req, res) => {
+    try {
+        const period = req.query.period;
+        const userId = req.user._id;
+
+        let startDate, endDate;
+        const now = new Date();
+
+        if (period === 'this week') {
+            startDate = new Date(now.setDate(now.getDate() - now.getDay()));
+            endDate = new Date(now.setDate(now.getDate() - now.getDay() + 6));
+        } else if (period === 'last week') {
+            startDate = new Date(now.setDate(now.getDate() - now.getDay() - 7));
+            endDate = new Date(now.setDate(now.getDate() - now.getDay() + 6));
+        } else if (period === 'this month') {
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        } else {
+            return res.status(400).json({ error: 'Invalid period parameter' });
+        }
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+
+        const consumedData = await History.aggregate([
+            {
+                $match: {
+                    user: userId,
+                    consumedAt: {
+                        $gte: startDate,
+                        $lte: endDate
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    protein: { $sum: "$protein" },
+                    carbs: { $sum: "$carbs" },
+                    fats: { $sum: "$fats" },
+                    calories: { $sum: "$calories" },
+                    ingredients: { $addToSet: "$ingredients" }
+                }
+            }
+        ]);
+
+        const consumed = consumedData[0] || {
+            protein: 0,
+            carbs: 0,
+            fats: 0,
+            calories: 0,
+            ingredients: []
+        };
+
+        res.json({
+            macronutrients: {
+                protein: consumed.protein,
+                carbs: consumed.carbs,
+                fats: consumed.fats,
+                calories: consumed.calories
+            },
+            ingredients: consumed.ingredients.flat()
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = {
     nutritionRoutes: router,

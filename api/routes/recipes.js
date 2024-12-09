@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router()
-const { getRecipes, getRecipeInformation, getNutritionById, getRecipeByNutrients } = require('../clients/spoonacular');
+const { getRecipes, getRecipeInformation, getNutritionById, getIngredientsById } = require('../clients/spoonacular');
 const Preferences = require('../models/preferences');
 const History = require('../models/history');
 const DailyGoal = require('../models/dailyGoal');
@@ -96,6 +96,11 @@ router.post('/:id/register', async (req, res) => {
         const protein = parseInt(nutritionalValues.protein.slice(0, -1));
         const carbs = parseInt(nutritionalValues.carbs.slice(0, -1));
         const fat = parseInt(nutritionalValues.fat.slice(0, -1));
+
+        const ingredients = await getIngredientsById(req.params.id);
+
+        const ingredientsList = ingredients.ingredients.map(ingredient => ingredient.name);
+
         const historyEntry = new History({
             user: req.user._id,
             consumedAt: new Date(),
@@ -103,7 +108,8 @@ router.post('/:id/register', async (req, res) => {
             protein,
             carbs,
             fat,
-            calories
+            calories,
+            ingredients: ingredientsList
         });
         await historyEntry.save();
         res.status(201).json({ message: 'Recipe consumption registered successfully' });
