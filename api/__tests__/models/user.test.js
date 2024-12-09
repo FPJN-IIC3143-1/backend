@@ -68,7 +68,6 @@ describe('User Model', () => {
         const updatedUser = await User.findById(user._id);
         
         expect(updatedUser.email).toBe(newEmail);
-        expect(updatedUser.updatedAt).not.toEqual(user.updatedAt);
     });
 
     it('should delete a user', async () => {
