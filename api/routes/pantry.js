@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { convertAmounts } = require('../clients/spoonacular');
+const { convertAmounts, getIngredientsById } = require('../clients/spoonacular');
 const Pantry = require('../models/pantry');
 
 
@@ -15,8 +15,23 @@ router.get('/', async (req, res) => {
 
 router.post('/modifyIngredients', async (req, res) => {
     try {
-        const ingredients = req.body.ingredients;
+        let ingredients = req.body.ingredients;
         const receivedSign = req.body.sign;
+
+        const recipeId = req.body.recipeId;
+
+        if (recipeId) {
+            const recipeIngredients = await getIngredientsById(recipeId);
+            ingredients = recipeIngredients.ingredients;
+            ingredients = ingredients.map(ingredient => ({
+                name: ingredient.name,
+                quantity: {
+                    amount: ingredient.amount.metric.value,
+                    unit: ingredient.amount.metric.unit
+                }
+            }));
+        }
+        console.log(ingredients);
 
         let pantry = await Pantry.findOne({ user: req.user._id });
 
@@ -27,14 +42,11 @@ router.post('/modifyIngredients', async (req, res) => {
         for (let ingredient of ingredients) {
             let existingIngredient = pantry.ingredients.find(i => i.name === ingredient.name);
             if (existingIngredient) {
+                const sign = Math.sign(receivedSign) || 1;
                 if (existingIngredient.quantity.unit !== ingredient.quantity.unit) {
-
-                    const sign = Math.sign(receivedSign) || 1;
-
                     ingredient = await convertIngredientUnit(ingredient, existingIngredient.quantity.unit);
-
-                    ingredient.quantity.amount = sign * ingredient.quantity.amount;
                 }
+                ingredient.quantity.amount = sign * ingredient.quantity.amount;
                 existingIngredient.quantity.amount += ingredient.quantity.amount;
             } else {
                 pantry.ingredients.push({

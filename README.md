@@ -1071,6 +1071,7 @@ GET /pantry
 Add or subtract ingredients from user pantry.
 The `json` body should contain an array of ingredients to add or remove, and also a parameter `sign` (1 or -1, defaults to 1) that indicates if the endpoint will add or subtract the ingredients from the pantry. When the quantity is 0, the ingredient will be removed from the pantry.
 If an ingredient is not found in the pantry, it will be added.
+Optional `recipe_id` parameter to add or subtract ingredients from a recipe.
 
 ### Example
 ```
