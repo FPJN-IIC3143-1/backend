@@ -1034,10 +1034,8 @@ GET /pantry
 
 ## POST /pantry/modifyIngredients
 Add or subtract ingredients from user pantry.
-The `json` body should contain an array of ingredients to add or remove. When the quantity is 0, the ingredient will be removed from the pantry.
+The `json` body should contain an array of ingredients to add or remove, and also a parameter `sign` (1 or -1, defaults to 1) that indicates if the endpoint will add or subtract the ingredients from the pantry. When the quantity is 0, the ingredient will be removed from the pantry.
 If an ingredient is not found in the pantry, it will be added.
-
-**IMPORTANT**: When storing an ingredient without a specific unit (e.g., 1 egg, 2 apples), ensure the unit field is left empty. This is because the Spoonacular API cannot convert from specific units to "no unit." However, it can convert from "no unit" to specific units (e.g., from 2 eggs to the equivalent amount in grams of eggs).
 
 ### Example
 ```
@@ -1046,6 +1044,7 @@ POST /pantry/modifyIngredients
 
 ```json
 {
+  "sign": 1,
   "ingredients": [
       {
           "name": "cinnamon",
