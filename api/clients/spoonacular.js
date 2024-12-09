@@ -3,7 +3,9 @@ require('dotenv').config();
 const Cache = require('../models/cache');
 //get random api key
 
-const tokens = ["a03a61ff8a8049898406de0256d4bdbe", "371958f8948d40cdb97ecbb522caccd1"]
+const tokens = ["a03a61ff8a8049898406de0256d4bdbe", "371958f8948d40cdb97ecbb522caccd1",
+                "c6f8431b64fa44218a1d8eafd8f7b2f2", "81d72543535d445ab1ff501eceb7774b",
+                "670d91726b134b24a67b3234c0720d06"]
 
 function getNextToken() {
     const token = tokens.shift();
