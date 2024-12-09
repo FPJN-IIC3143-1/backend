@@ -99,21 +99,23 @@
     - [Example](#example-9)
   - [POST /nutrition/dailyGoal](#post-nutritiondailygoal)
     - [Example](#example-10)
-  - [GET /preferences](#get-preferences)
+  - [GET /nutrition/consumedOverPeriod](#get-nutritionconsumedoverperiod)
     - [Example](#example-11)
-  - [POST /preferences](#post-preferences)
+  - [GET /preferences](#get-preferences)
     - [Example](#example-12)
-  - [GET /pantry](#get-pantry)
+  - [POST /preferences](#post-preferences)
     - [Example](#example-13)
-  - [POST /pantry/modifyIngredients](#post-pantrymodifyingredients)
+  - [GET /pantry](#get-pantry)
     - [Example](#example-14)
-  - [POST /pantry/updatePantry](#post-pantryupdatepantry)
+  - [POST /pantry/modifyIngredients](#post-pantrymodifyingredients)
     - [Example](#example-15)
+  - [POST /pantry/updatePantry](#post-pantryupdatepantry)
+    - [Example](#example-16)
 - [POST /payment](#post-payment)
-  - [Example](#example-16)
+  - [Example](#example-17)
 - [GET /payment/status?token\_ws={token}](#get-paymentstatustoken_wstoken)
   - [URL parameters](#url-parameters)
-  - [Example](#example-17)
+  - [Example](#example-18)
 - [Appendix](#appendix)
   - [diets](#diets)
   - [intolerances](#intolerances)
@@ -941,6 +943,39 @@ POST /nutrition/dailyGoal
     "carbs": "250",
     "fats": "100",
     "calories": "2900"
+}
+```
+
+## GET /nutrition/consumedOverPeriod
+Get the user's macronutrients and ingredient intake over a period of time.
+The `period` query parameter is required and can be `this week`, `last week`, or `this month`.
+
+### Example
+```
+GET /nutrition/consumedOverPeriod?period=this week
+```
+
+```json
+{
+    "macronutrients": {
+        "protein": 22,
+        "carbs": 222,
+        "fats": 0,
+        "calories": 1798
+    },
+    "ingredients": [
+        "blueberries",
+        "egg white",
+        "flour",
+        "granulated sugar",
+        "fresh lemon juice",
+        "nutmeg",
+        "pie dough round",
+        "quick cooking tapioca",
+        "trimmed rhubarb",
+        "salt",
+        "unsalted butter"
+    ]
 }
 ```
 
