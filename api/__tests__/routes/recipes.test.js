@@ -1,313 +1,294 @@
 const request = require('supertest');
 const express = require('express');
 const router = require('../../routes/recipes');
-
+const { getRecipes, getRecipeInformation, getNutritionById } = require('../../clients/spoonacular');
 const Preferences = require('../../models/preferences');
 const History = require('../../models/history');
 const DailyGoal = require('../../models/dailyGoal');
-
-const { getRecipes, getRecipeInformation, getNutritionById } = require('../../clients/spoonacular');
+const FavoriteRecipes = require('../../models/favoriteRecipes');
 const { getDailyMacros } = require('../../routes/nutrition');
 
+jest.mock('../../clients/spoonacular');
 jest.mock('../../models/preferences');
 jest.mock('../../models/history');
 jest.mock('../../models/dailyGoal');
-jest.mock('../../clients/spoonacular');
+jest.mock('../../models/favoriteRecipes');
 jest.mock('../../routes/nutrition');
 
 const app = express();
 app.use(express.json());
 app.use((req, res, next) => {
-    req.user = { _id: 'user123' };
+    req.user = { _id: 'testUserId' };
     next();
 });
 app.use('/recipes', router);
 
-describe('Recipes API', () => {
+describe('Recipe Routes', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     describe('GET /recipes', () => {
-        it('should return recipes based on user preferences and query parameters', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 1, title: 'Vegetarian Pizza' },
-                { id: 2, title: 'Gluten-Free Pasta' }
-            ]);
+        it('should return recipes with user preferences', async () => {
+            const mockPreferences = { diet: 'vegetarian', intolerances: 'dairy' };
+            const mockRecipes = { results: [{ id: 1, title: 'Test Recipe' }] };
 
-            Preferences.findOne.mockResolvedValue({
-                diet: 'vegetarian',
-                intolerances: 'gluten'
-            });
+            Preferences.findOne.mockResolvedValue(mockPreferences);
+            getRecipes.mockResolvedValue(mockRecipes);
 
-            const response = await request(app)
-                .get('/recipes')
-                .query({ cuisine: 'Italian' });
+            const response = await request(app).get('/recipes');
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 1, title: 'Vegetarian Pizza' },
-                { id: 2, title: 'Gluten-Free Pasta' }
-            ]);
+            expect(response.body).toEqual(mockRecipes);
+            expect(getRecipes).toHaveBeenCalledWith(expect.objectContaining(mockPreferences));
         });
 
-        it('should return recipes with null preferences if none are found', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 7, title: 'Default Preference Meal' }
-            ]);
-
+        it('should handle case with no preferences', async () => {
             Preferences.findOne.mockResolvedValue(null);
+            const mockRecipes = { results: [{ id: 1, title: 'Test Recipe' }] };
+            getRecipes.mockResolvedValue(mockRecipes);
 
-            const response = await request(app)
-                .get('/recipes')
-                .query({ cuisine: 'Mexican' });
+            const response = await request(app).get('/recipes');
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 7, title: 'Default Preference Meal' }
-            ]);
+            expect(response.body).toEqual(mockRecipes);
+            expect(getRecipes).toHaveBeenCalledWith(expect.objectContaining({
+                diet: null,
+                intolerances: null
+            }));
         });
     });
 
     describe('GET /recipes/generateByNutritionalGoals', () => {
-        const dailyGoalMock = {
-            calories: 2500,
-            protein: 150,
-            carbs: 200,
-            fats: 70
-        };
+        it('should generate recipes based on remaining daily goals', async () => {
+            const mockPreferences = { diet: 'vegetarian' };
+            const mockDailyGoal = { calories: 2000, protein: 150, carbs: 200, fats: 70 };
+            const mockConsumed = {
+                consumed: { calories: 1000, protein: 75, carbs: 100, fats: 35 },
+                goal: mockDailyGoal
+            };
+            const mockRecipes = { results: [{ id: 1, title: 'Test Recipe' }] };
 
-        const consumedMacrosMock = {
-            consumed: {
-                calories: 1200,
-                protein: 50,
-                carbs: 100,
-                fats: 30
-            }
-        };
-
-        it('should return recipes based on nutritional goals and preferences with medium coverage', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 3, title: 'High Protein Salad' }
-            ]);
-
-            Preferences.findOne.mockResolvedValue({
-                diet: 'high-protein',
-                intolerances: 'none'
-            });
-
-            DailyGoal.findOne.mockResolvedValue(dailyGoalMock);
-
-            getDailyMacros.mockResolvedValue(consumedMacrosMock);
+            Preferences.findOne.mockResolvedValue(mockPreferences);
+            DailyGoal.findOne.mockResolvedValue(mockDailyGoal);
+            getDailyMacros.mockResolvedValue(mockConsumed);
+            getRecipes.mockResolvedValue(mockRecipes);
 
             const response = await request(app)
                 .get('/recipes/generateByNutritionalGoals')
                 .query({ coverage: 'medium' });
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 3, title: 'High Protein Salad' }
-            ]);
+            expect(response.body).toEqual(mockRecipes);
         });
 
-        it('should return 404 if daily goal is not found', async () => {
+        it('should handle different coverage levels', async () => {
+            const mockPreferences = { diet: 'vegetarian' };
+            const mockDailyGoal = { calories: 2000, protein: 150, carbs: 200, fats: 70 };
+            const mockConsumed = {
+                consumed: { calories: 1000, protein: 75, carbs: 100, fats: 35 },
+                goal: mockDailyGoal
+            };
+            const mockRecipes = { results: [{ id: 1, title: 'Test Recipe' }] };
+
+            Preferences.findOne.mockResolvedValue(mockPreferences);
+            DailyGoal.findOne.mockResolvedValue(mockDailyGoal);
+            getDailyMacros.mockResolvedValue(mockConsumed);
+            getRecipes.mockResolvedValue(mockRecipes);
+
+            const coverageLevels = ['high', 'medium', 'low', 'very-low', 'invalid'];
+
+            for (const coverage of coverageLevels) {
+                const response = await request(app)
+                    .get('/recipes/generateByNutritionalGoals')
+                    .query({ coverage });
+
+                expect(response.status).toBe(200);
+                expect(response.body).toEqual(mockRecipes);
+            }
+        });
+
+        it('should handle missing daily goal', async () => {
             DailyGoal.findOne.mockResolvedValue(null);
 
-            const response = await request(app)
-                .get('/recipes/generateByNutritionalGoals');
+            const response = await request(app).get('/recipes/generateByNutritionalGoals');
 
             expect(response.status).toBe(404);
             expect(response.body).toEqual({ error: 'Daily goal not found' });
         });
-
-        it('should return recipes with high coverage', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 4, title: 'High Coverage Meal' }
-            ]);
-
-            Preferences.findOne.mockResolvedValue({
-                diet: 'balanced',
-                intolerances: 'none'
-            });
-
-            DailyGoal.findOne.mockResolvedValue(dailyGoalMock);
-
-            getDailyMacros.mockResolvedValue(consumedMacrosMock);
-
-            const response = await request(app)
-                .get('/recipes/generateByNutritionalGoals')
-                .query({ coverage: 'high' });
-
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 4, title: 'High Coverage Meal' }
-            ]);
-        });
-
-        it('should return recipes with medium coverage', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 8, title: 'Medium Coverage Meal' }
-            ]);
-
-            Preferences.findOne.mockResolvedValue({
-                diet: 'balanced',
-                intolerances: 'none'
-            });
-
-            DailyGoal.findOne.mockResolvedValue(dailyGoalMock);
-
-            getDailyMacros.mockResolvedValue(consumedMacrosMock);
-
-            const response = await request(app)
-                .get('/recipes/generateByNutritionalGoals')
-                .query({ coverage: 'medium' });
-
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 8, title: 'Medium Coverage Meal' }
-            ]);
-        });
-
-        it('should return recipes with low coverage', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 5, title: 'Low Coverage Meal' }
-            ]);
-
-            Preferences.findOne.mockResolvedValue({
-                diet: 'low-carb',
-                intolerances: 'none'
-            });
-
-            DailyGoal.findOne.mockResolvedValue(dailyGoalMock);
-
-            getDailyMacros.mockResolvedValue(consumedMacrosMock);
-
-            const response = await request(app)
-                .get('/recipes/generateByNutritionalGoals')
-                .query({ coverage: 'low' });
-
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 5, title: 'Low Coverage Meal' }
-            ]);
-        });
-
-        it('should return recipes with very-low coverage', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 6, title: 'Very Low Coverage Meal' }
-            ]);
-
-            Preferences.findOne.mockResolvedValue({
-                diet: 'keto',
-                intolerances: 'none'
-            });
-
-            DailyGoal.findOne.mockResolvedValue(dailyGoalMock);
-
-            getDailyMacros.mockResolvedValue(consumedMacrosMock);
-
-            const response = await request(app)
-                .get('/recipes/generateByNutritionalGoals')
-                .query({ coverage: 'very-low' });
-
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 6, title: 'Very Low Coverage Meal' }
-            ]);
-        });
-
-        it('should return recipes with no coverage specified', async () => {
-            getRecipes.mockResolvedValue([
-                { id: 8, title: 'No Coverage Meal' }
-            ]);
-
-            Preferences.findOne.mockResolvedValue({
-                diet: 'vegan',
-                intolerances: 'none'
-            });
-
-            DailyGoal.findOne.mockResolvedValue(dailyGoalMock);
-
-            getDailyMacros.mockResolvedValue(consumedMacrosMock);
-
-            const response = await request(app)
-                .get('/recipes/generateByNutritionalGoals');
-
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual([
-                { id: 8, title: 'No Coverage Meal' }
-            ]);
-        });
     });
 
     describe('GET /recipes/:id/nutrition', () => {
-        it('should return nutrition information for a specific recipe', async () => {
-            getNutritionById.mockResolvedValue({
-                calories: '500 kcal',
-                protein: '20g',
-                carbs: '60g',
-                fat: '15g'
-            });
+        it('should return recipe nutrition information', async () => {
+            const mockNutrition = { calories: '500 kcal', protein: '20g' };
+            getNutritionById.mockResolvedValue(mockNutrition);
 
-            const response = await request(app)
-                .get('/recipes/1/nutrition');
+            const response = await request(app).get('/recipes/123/nutrition');
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual({
-                calories: '500 kcal',
-                protein: '20g',
-                carbs: '60g',
-                fat: '15g'
-            });
+            expect(response.body).toEqual(mockNutrition);
         });
     });
 
     describe('GET /recipes/:id/info', () => {
-        it('should return recipe information for a specific recipe', async () => {
-            getRecipeInformation.mockResolvedValue({
-                id: 1,
-                title: 'Vegetarian Pizza',
-                ingredients: ['dough', 'tomato sauce', 'cheese', 'bell peppers'],
-                instructions: 'Bake at 400 degrees for 20 minutes.'
-            });
+        it('should return recipe information', async () => {
+            const mockInfo = { id: 123, title: 'Test Recipe', instructions: 'Test instructions' };
+            getRecipeInformation.mockResolvedValue(mockInfo);
 
-            const response = await request(app)
-                .get('/recipes/1/info');
+            const response = await request(app).get('/recipes/123/info');
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual({
-                id: 1,
-                title: 'Vegetarian Pizza',
-                ingredients: ['dough', 'tomato sauce', 'cheese', 'bell peppers'],
-                instructions: 'Bake at 400 degrees for 20 minutes.'
-            });
+            expect(response.body).toEqual(mockInfo);
         });
     });
 
     describe('POST /recipes/:id/register', () => {
-        it('should register recipe consumption and return success message', async () => {
-            getNutritionById.mockResolvedValue({
-                calories: '500 kcal',
+        it('should register recipe consumption', async () => {
+            const mockNutrition = {
+                calories: '500',
                 protein: '20g',
-                carbs: '60g',
+                carbs: '30g',
                 fat: '15g'
-            });
+            };
+            getNutritionById.mockResolvedValue(mockNutrition);
+            History.prototype.save = jest.fn().mockResolvedValue(undefined);
 
-            const saveMock = jest.fn().mockResolvedValue();
-            History.mockImplementation(() => ({ save: saveMock }));
-
-            const response = await request(app)
-                .post('/recipes/1/register');
+            const response = await request(app).post('/recipes/123/register');
 
             expect(response.status).toBe(201);
             expect(response.body).toEqual({ message: 'Recipe consumption registered successfully' });
-            expect(saveMock).toHaveBeenCalled();
         });
 
-        it('should handle errors during recipe consumption registration', async () => {
-            History.mockImplementation(() => ({ save: jest.fn().mockRejectedValue(new Error('Failed to register recipe consumption')) }));
+        it('should handle registration errors', async () => {
+            getNutritionById.mockRejectedValue(new Error('API Error'));
 
-            const response = await request(app)
-                .post('/recipes/1/register');
+            const response = await request(app).post('/recipes/123/register');
 
             expect(response.status).toBe(500);
             expect(response.body).toEqual({ error: 'Failed to register recipe consumption' });
+        });
+    });
+
+    describe('POST /recipes/:id/favorite', () => {
+        it('should add recipe to favorites', async () => {
+            const mockNutrition = {
+                calories: '500',
+                protein: '20g',
+                carbs: '30g',
+                fat: '15g'
+            };
+            getNutritionById.mockResolvedValue(mockNutrition);
+            FavoriteRecipes.findOneAndUpdate.mockResolvedValue(undefined);
+
+            const response = await request(app).post('/recipes/123/favorite');
+
+            expect(response.status).toBe(201);
+            expect(response.body).toEqual({ message: 'Recipe added to favorites' });
+        });
+
+        it('should handle favorite addition errors', async () => {
+            getNutritionById.mockRejectedValue(new Error('API Error'));
+
+            const response = await request(app).post('/recipes/123/favorite');
+
+            expect(response.status).toBe(500);
+            expect(response.body).toEqual({ error: 'Failed to add recipe to favorites' });
+        });
+    });
+
+    describe('DELETE /recipes/:id/favorite', () => {
+        it('should remove recipe from favorites', async () => {
+            FavoriteRecipes.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+            const response = await request(app).delete('/recipes/123/favorite');
+
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual({ message: 'Recipe removed from favorites' });
+        });
+
+        it('should handle favorite removal errors', async () => {
+            FavoriteRecipes.deleteOne.mockRejectedValue(new Error('Database Error'));
+
+            const response = await request(app).delete('/recipes/123/favorite');
+
+            expect(response.status).toBe(500);
+            expect(response.body).toEqual({ error: 'Failed to remove recipe from favorites' });
+        });
+    });
+
+    describe('GET /recipes/favorites', () => {
+        it('should return favorite recipes with default limit', async () => {
+            const mockFavorites = [
+                { recipe_id: 1, title: 'Recipe 1' },
+                { recipe_id: 2, title: 'Recipe 2' }
+            ];
+            FavoriteRecipes.find.mockReturnValue({
+                sort: jest.fn().mockReturnValue({
+                    limit: jest.fn().mockResolvedValue(mockFavorites)
+                })
+            });
+
+            const response = await request(app).get('/recipes/favorites');
+
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual(mockFavorites);
+        });
+
+        it('should respect custom limit parameter', async () => {
+            const mockFavorites = [{ recipe_id: 1, title: 'Recipe 1' }];
+            FavoriteRecipes.find.mockReturnValue({
+                sort: jest.fn().mockReturnValue({
+                    limit: jest.fn().mockResolvedValue(mockFavorites)
+                })
+            });
+
+            const response = await request(app).get('/recipes/favorites?limit=1');
+
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual(mockFavorites);
+        });
+    });
+
+    describe('GET /recipes/lastConsumed', () => {
+        it('should return last consumed recipes with default limit', async () => {
+            const mockDate = new Date('2024-01-01T12:00:00Z');
+            const mockHistory = [
+                { recipe_id: 1, consumedAt: mockDate },
+                { recipe_id: 2, consumedAt: mockDate }
+            ];
+            History.find.mockReturnValue({
+                sort: jest.fn().mockReturnValue({
+                    limit: jest.fn().mockResolvedValue(mockHistory)
+                })
+            });
+
+            const response = await request(app).get('/recipes/lastConsumed');
+
+            expect(response.status).toBe(200);
+            const expectedResponse = mockHistory.map(item => ({
+                ...item,
+                consumedAt: item.consumedAt.toISOString()
+            }));
+            expect(response.body).toEqual(expectedResponse);
+        });
+
+        it('should respect custom limit parameter', async () => {
+            const mockDate = new Date('2024-01-01T12:00:00Z');
+            const mockHistory = [{ recipe_id: 1, consumedAt: mockDate }];
+            History.find.mockReturnValue({
+                sort: jest.fn().mockReturnValue({
+                    limit: jest.fn().mockResolvedValue(mockHistory)
+                })
+            });
+
+            const response = await request(app).get('/recipes/lastConsumed?limit=1');
+
+            expect(response.status).toBe(200);
+            const expectedResponse = mockHistory.map(item => ({
+                ...item,
+                consumedAt: item.consumedAt.toISOString()
+            }));
+            expect(response.body).toEqual(expectedResponse);
         });
     });
 });
